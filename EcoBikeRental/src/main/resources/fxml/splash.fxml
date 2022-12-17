@@ -13,7 +13,7 @@
             <Image url="@../images/logo.png" />
          </image>
       </ImageView>
-      <Label text="Capstone" textFill="#196bb4">
+      <Label text="Eco Bike" textFill="#196bb4">
          <font>
             <Font size="30.0" />
          </font>
