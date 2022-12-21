@@ -1,9 +1,0 @@
-SRS:
-1. Create account (Chinh)
-2. Rent bike (Chinh - Deposit, Bach - Show detail)
-3. Return bike (Bach)
-4. Pay rental (Cong)
-
-Interaction diagram (per usecase):
-1. Class diagram
-2. Sequence diagram
