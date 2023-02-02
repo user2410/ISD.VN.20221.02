@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitMenuButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="788.0" prefWidth="1326.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox prefHeight="104.0" prefWidth="1326.0" style="-fx-background-color: #ccebff; -fx-border-color: #33adff;">
+         <children>
+            <VBox prefHeight="102.0" prefWidth="231.0">
+               <children>
+                  <Pane prefHeight="102.0" prefWidth="237.0">
+                     <children>
+                        <ImageView fx:id="aimsImage" fitHeight="94.0" fitWidth="115.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: hand;">
+                           <image>
+                              <Image url="@../../../../../Pictures/ImagesImages/anime-Jashin-chan-Dropkick-season-2.jpg" />
+                           </image>
+                        </ImageView>
+                        <Label layoutX="120.0" layoutY="13.0" prefHeight="41.0" prefWidth="161.0" text="Return" textAlignment="CENTER" textFill="#5091e6">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </Pane>
+               </children>
+            </VBox>
+            <HBox prefHeight="102.0" prefWidth="882.0">
+               <children>
+                  <Pane prefHeight="102.0" prefWidth="562.0" />
+                  <Pane prefHeight="102.0" prefWidth="158.0" />
+               </children>
+            </HBox>
+            <VBox prefHeight="102.0" prefWidth="161.0">
+               <children>
+                  <Pane prefHeight="200.0" prefWidth="200.0" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
+      <BorderPane layoutX="7.0" layoutY="109.0" prefHeight="661.0" prefWidth="1307.0">
+         <center>
+            <GridPane BorderPane.alignment="CENTER">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1192.0" minWidth="10.0" prefWidth="1177.0" />
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1142.0" minWidth="10.0" prefWidth="130.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0">
+                     <center>
+                        <Label alignment="CENTER" prefHeight="65.0" prefWidth="197.0" text="Bai xe" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="39.0" />
+                           </font>
+                        </Label>
+                     </center>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+                     <left>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="Ten bai xe" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </left>
+                     <right>
+                        <Label prefHeight="35.0" prefWidth="300.0" text="So luong xe toi da" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </right>
+                     <center>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="So luong xe trong bai" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </center>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="2">
+                     <left>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="Bai xe thang long" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </left>
+                     <center>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="350.0" text="12" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </center>
+                     <right>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="300.0" text="30" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </right>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="3">
+                     <left>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="Bai xe hai phong" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </left>
+                     <center>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="350.0" text="12" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </center>
+                     <right>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="300.0" text="30" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </right>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="4">
+                     <left>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="Bai xe abc" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </left>
+                     <center>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="350.0" text="12" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </center>
+                     <right>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="300.0" text="30" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </right>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="5">
+                     <left>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="Bai xe phuc hop" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </left>
+                     <center>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="350.0" text="12" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </center>
+                     <right>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="300.0" text="30" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </right>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="6">
+                     <left>
+                        <Label prefHeight="35.0" prefWidth="350.0" text="Bai xe hello" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </left>
+                     <center>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="350.0" text="12" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </center>
+                     <right>
+                        <Label alignment="CENTER" prefHeight="35.0" prefWidth="300.0" text="30" BorderPane.alignment="CENTER">
+                           <font>
+                              <Font size="30.0" />
+                           </font>
+                        </Label>
+                     </right>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                     <center>
+                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="86.0" text="Tra xe" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                     <center>
+                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="86.0" text="Tra xe" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                     <center>
+                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="86.0" text="Tra xe" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                     <center>
+                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="86.0" text="Tra xe" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+                  <BorderPane prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                     <center>
+                        <Button mnemonicParsing="false" prefHeight="42.0" prefWidth="86.0" text="Tra xe" BorderPane.alignment="CENTER" />
+                     </center>
+                  </BorderPane>
+               </children>
+            </GridPane>
+         </center>
+         <top>
+            <Button mnemonicParsing="false" prefHeight="46.0" prefWidth="227.0" style="-: #e8005d;" text="Huy" textFill="#eb0703" BorderPane.alignment="CENTER">
+               <font>
+                  <Font size="32.0" />
+               </font>
+            </Button>
+         </top>
+      </BorderPane>
+   </children>
+</AnchorPane>
