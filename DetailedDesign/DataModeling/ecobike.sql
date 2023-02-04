@@ -1,67 +1,124 @@
-CREATE TABLE Bike (
-	id integer PRIMARY KEY,
-	licensePlate text not null,
-	nSaddles integer not null,
-	nPedals integer not null,
-	nRearSeats integer not null,
-	price integer not null
+CREATE TYPE "BIKE_TYPE" AS ENUM (
+  'STANDARD_BIKE',
+  'STANDARD_EBIKE',
+  'TWIN_BIKE'
 );
 
-PRAGMA foreign_keys = ON;
-
-CREATE TABLE StandardBike (
-	id integer PRIMARY KEY REFERENCES Bike(id)
+CREATE TYPE "LOCK_STATUS" AS ENUM (
+  'LOCKED',
+  'RELEASED'
 );
 
-CREATE TABLE EBike (
-	id integer PRIMARY KEY REFERENCES Bike(id),
-	batteryLife float not null
+CREATE TYPE "INVOICE_OF" AS ENUM (
+  'RENTAL',
+  'RETURN'
 );
 
-CREATE TABLE TwinBike (
-	id integer PRIMARY KEY REFERENCES Bike(id)
+CREATE TABLE "Bike" (
+  "id" bigserial PRIMARY KEY,
+  "licensePlate" varchar NOT NULL,
+  "price" integer NOT NULL,
+  "type" BIKE_TYPE NOT NULL
 );
 
-CREATE TABLE Dock (
-	id integer PRIMARY KEY,
-	name text NOT NULL,
-	address text NOT NULL,
-	area float NOT NULL
+CREATE TABLE "EBike" (
+  "id" bigint PRIMARY KEY,
+  "batteryLife" float NOT NULL
 );
 
-CREATE TABLE Lock (
-	barCode text PRIMARY KEY,
-	bikeId integer REFERENCES Bike(id),
-	dockId integer NOT NULL REFERENCES Dock(id),
-	status text NOT NULL default 'RELEASED'
+CREATE TABLE "Dock" (
+  "id" bigserial PRIMARY KEY,
+  "name" varchar NOT NULL,
+  "address" varchar NOT NULL,
+  "area" float NOT NULL,
+  "capacity" integer NOT NULL
 );
 
-CREATE TABLE Rental(
-	id integer PRIMARY KEY,
-	bikeId integer NOT NULL REFERENCES Bike(id),
-	deposit integer NOT NULL,
-	startTime integer NOT NULL,
-	returnTime integer
+CREATE TABLE "Lock" (
+  "id" bigserial,
+  "barCode" varchar,
+  "dockId" integer,
+  "status" LOCK_STATUS NOT NULL DEFAULT 'RELEASED',
+  PRIMARY KEY ("id", "barCode")
 );
 
-CREATE TABLE Invoice(
-	id integer PRIMARY KEY,
-	rentalId integer NOT NULL REFERENCES Rental(id),
-	totalAmount integer NOT NULL
+CREATE TABLE "Rental" (
+  "id" bigserial PRIMARY KEY,
+  "bikeId" bigint NOT NULL,
+  "rentDockId" bigint NOT NULL,
+  "rentLockId" bigint NOT NULL,
+  "deposit" bigint NOT NULL,
+  "startTime" timestamptz NOT NULL
 );
 
-CREATE TABLE Card(
-	id integer PRIMARY KEY,
-	cardCode text NOT NULL,
-	owner text NOT NULL,
-	cvvCode text NOT NULL,
-	dateExpired integer NOT NULL
+CREATE TABLE "Return" (
+  "id" bigserial PRIMARY KEY,
+  "rentalId" bigint NOT NULL,
+  "returnDockId" bigint NOT NULL,
+  "returnLockId" bigint NOT NULL,
+  "returnTime" timestamptz NOT NULL
 );
 
-CREATE TABLE PaymentTransaction(
-	id integer PRIMARY KEY,
-	content text NOT NULL,
-	method text NOT NULL DEFAULT 'CARD',
-	createdAt integer NOT NULL,
-	cardId 
+CREATE TABLE "Invoice" (
+  "id" bigserial PRIMARY KEY,
+  "rid" bigint NOT NULL,
+  "rtype" INVOICE_OF NOT NULL,
+  "totalAmount" integer NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
 );
+
+CREATE TABLE "PaymentTransaction" (
+  "id" bigserial PRIMARY KEY,
+  "content" varchar NOT NULL DEFAULT '',
+  "method" varchar NOT NULL DEFAULT 'credit card',
+  "cardId" integer NOT NULL,
+  "invoiceId" integer NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT (now())
+);
+
+CREATE TABLE "Card" (
+  "id" bigserial PRIMARY KEY,
+  "cardCode" varchar NOT NULL,
+  "owner" varchar NOT NULL,
+  "cvvCode" varchar NOT NULL,
+  "expiryDate" timestamp NOT NULL,
+  "balance" bigint NOT NULL
+);
+
+COMMENT ON COLUMN "Bike"."price" IS 'must ge greater than 0';
+
+COMMENT ON COLUMN "EBike"."batteryLife" IS 'must be greater than 0';
+
+COMMENT ON COLUMN "Dock"."area" IS 'must be greater than 0';
+
+COMMENT ON COLUMN "Dock"."capacity" IS 'must be greater than 0';
+
+COMMENT ON COLUMN "Rental"."deposit" IS 'must be greater than 0';
+
+COMMENT ON COLUMN "Return"."returnTime" IS 'must be later than startTime';
+
+COMMENT ON COLUMN "Invoice"."rid" IS 'id of corresponding rental or return';
+
+COMMENT ON COLUMN "Invoice"."totalAmount" IS 'must be greater than 0';
+
+COMMENT ON COLUMN "Card"."balance" IS 'must be greater than 0';
+
+ALTER TABLE "EBike" ADD FOREIGN KEY ("id") REFERENCES "Bike" ("id");
+
+ALTER TABLE "Lock" ADD FOREIGN KEY ("dockId") REFERENCES "Dock" ("id");
+
+ALTER TABLE "Rental" ADD FOREIGN KEY ("bikeId") REFERENCES "Bike" ("id");
+
+ALTER TABLE "Rental" ADD FOREIGN KEY ("rentDockId") REFERENCES "Dock" ("id");
+
+ALTER TABLE "Rental" ADD FOREIGN KEY ("rentLockId") REFERENCES "Lock" ("id");
+
+ALTER TABLE "Return" ADD FOREIGN KEY ("rentalId") REFERENCES "Rental" ("id");
+
+ALTER TABLE "Return" ADD FOREIGN KEY ("returnDockId") REFERENCES "Dock" ("id");
+
+ALTER TABLE "Return" ADD FOREIGN KEY ("returnLockId") REFERENCES "Lock" ("id");
+
+ALTER TABLE "PaymentTransaction" ADD FOREIGN KEY ("cardId") REFERENCES "Card" ("id");
+
+ALTER TABLE "PaymentTransaction" ADD FOREIGN KEY ("invoiceId") REFERENCES "Invoice" ("id");
