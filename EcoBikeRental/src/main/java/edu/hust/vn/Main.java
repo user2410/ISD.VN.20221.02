@@ -5,12 +5,14 @@ import edu.hust.vn.entity.Bike;
 import edu.hust.vn.entity.Invoice;
 import edu.hust.vn.entity.Rental;
 import edu.hust.vn.utils.Configs;
+import edu.hust.vn.utils.Pricing.Pricing24H;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+
+import java.sql.Timestamp;
 
 public class Main extends Application {
 
@@ -33,8 +35,9 @@ public class Main extends Application {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(Configs.RETURN_SCREEN_PATH));
             ReturnController returnController = new ReturnController(
                     new Bike(1, "18G-12345", 120000),
-                    new Rental(1, 1, 0),
-                    new Invoice(1, 1)
+                    new Rental(1, 1, new Timestamp(System.currentTimeMillis())),
+                    new Invoice(1, 1),
+                    new Pricing24H()
             );
             fxmlLoader.setController(returnController);
             Parent root = fxmlLoader.load();

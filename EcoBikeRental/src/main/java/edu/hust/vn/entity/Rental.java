@@ -1,12 +1,14 @@
 package edu.hust.vn.entity;
 
+import java.sql.Timestamp;
+
 public class Rental {
     private int id;
     private int bikeId;
-    private int startTime;
-    private int returnTime;
+    private Timestamp startTime;
+    private Timestamp returnTime;
 
-    public Rental(int id, int bikeId, int startTime) {
+    public Rental(int id, int bikeId, Timestamp startTime) {
         this.id = id;
         this.bikeId = bikeId;
         this.startTime = startTime;
@@ -28,19 +30,19 @@ public class Rental {
         this.bikeId = bikeId;
     }
 
-    public int getStartTime() {
+    public Timestamp getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(int startTime) {
+    public void setStartTime(Timestamp startTime) {
         this.startTime = startTime;
     }
 
-    public int getReturnTime() {
+    public Timestamp getReturnTime() {
         return returnTime;
     }
 
-    public void setReturnTime(int returnTime) {
+    public void setReturnTime(Timestamp returnTime) {
         this.returnTime = returnTime;
     }
 }
