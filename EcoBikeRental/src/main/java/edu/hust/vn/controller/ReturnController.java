@@ -1,9 +1,8 @@
-package main.java.edu.hust.vn.controller;
+package edu.hust.vn.controller;
 
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,10 +12,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Duration;
-import main.java.edu.hust.vn.entity.Bike;
-import main.java.edu.hust.vn.entity.Dock;
-import main.java.edu.hust.vn.entity.Invoice;
-import main.java.edu.hust.vn.entity.Rental;
+import edu.hust.vn.entity.Bike;
+import edu.hust.vn.entity.Dock;
+import edu.hust.vn.entity.Invoice;
+import edu.hust.vn.entity.Rental;
 
 import java.io.IOException;
 import java.net.URL;
@@ -70,7 +69,7 @@ public class ReturnController extends BaseController implements Initializable {
             }else {
                 timeLine.stop();
                 System.out.println(dock.getName());
-                dock.addBikeToDock(bike);
+                dock.addBikeToDock(this.bike);
                 // payment method
                 // chuyen man hinh sang thanh toan hoa don kem du lieu bike
             }
