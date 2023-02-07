@@ -9,10 +9,13 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class HomeScreenHandler extends BaseScreenHandler{
 
@@ -20,7 +23,7 @@ public class HomeScreenHandler extends BaseScreenHandler{
     private ImageView erbImage;
 
     @FXML
-    private ImageView returnBikeImg;
+    private TextField searchInput;
 
     @FXML
     private ImageView rentedBikeImg;
@@ -39,32 +42,6 @@ public class HomeScreenHandler extends BaseScreenHandler{
         setBaseController(homectl);
 
         ObservableList<Dock> dockList = homectl.getAllDocks();
-        dockList.addListener((ListChangeListener<Dock>) c -> {
-            // update homeItems
-            // find which item in homeItems but not in dockList => remove from homeItems
-            for(DockCardHandler dc : homeItems){
-                if(DataStore.getInstance().getDockById(dc.getDockID()) == null){
-                    homeItems.remove(dc);
-                }
-            }
-            // find which item in dockList but not in homeItems => add to homeList
-            for(Dock dock : dockList){
-                boolean found = false;
-                for(DockCardHandler dc : homeItems){
-                    if(dc.getDockID() == dock.getId()){
-                        found = true;
-                        break;
-                    }
-                }
-                if(!found) {
-                    try {
-                        homeItems.add(new DockCardHandler(Configs.DOCK_CARD_PATH, dock));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
 
         try{
             for(Dock dock : dockList){
@@ -84,16 +61,44 @@ public class HomeScreenHandler extends BaseScreenHandler{
         });
 
         erbImage.setOnMouseClicked(e -> {
-
-        });
-
-        returnBikeImg.setOnMouseClicked(e -> {
-
+            try {
+                DataStore.getInstance().dockDAO.updateDockList();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         });
 
         rentedBikeImg.setOnMouseClicked(e -> {
 
         });
+
+        searchInput.textProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue.length() == 0){
+                // reset dock view
+                for(int i=0; i<homeItems.size(); i++){
+                    DockCardHandler dc = homeItems.get(i);
+                    boolean old = dc.getShow();
+                    dc.setShow(true);
+                    if(old == false) docksView.getChildren().add(i, dc.getContent());
+                };
+                return;
+            }
+            ArrayList<Dock> res = ((HomeController)this.getBaseController()).searchDockList(newValue);
+            docksView.getChildren().clear();
+            for(DockCardHandler dc : homeItems){
+                for(Dock d : res){
+                    if(d.getId() == dc.getDockID()){
+                        docksView.getChildren().add(dc.getContent());
+                        break;
+                    }
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onShow() {
+        docksView.requestFocus();
     }
 
     public static HomeScreenHandler getHomeScreenHandler() throws IOException {

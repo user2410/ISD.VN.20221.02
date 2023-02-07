@@ -62,10 +62,8 @@ public class DockScreenHandler extends BaseScreenHandler {
                 ex.printStackTrace();
             }
         });
-        dockTitle.setText("Dock "+dock.getName());
-        availableLots.setText("Available lots: "+dock.getAvailableLots());
-        availableBikes.setText("Available bikes: "+dock.getAvailableBikes());
-        address.setText("Address: "+dock.getAddress());
+        dockTitle.textProperty().bind(dock.nameProperty());
+        address.textProperty().bind(dock.addressProperty());
 
         initTable(standardBikeTbl);
         initTable(standardEBikeTbl);
@@ -112,6 +110,16 @@ public class DockScreenHandler extends BaseScreenHandler {
     }
 
     void requestToRentBike() throws SQLException, IOException {
+        try {
 
+        }catch (Exception e){
+
+        }
+    }
+
+    @Override
+    public void onShow() {
+        availableLots.setText("Available lots: "+dock.getAvailableLots());
+        availableBikes.setText("Available bikes: "+dock.getAvailableBikes());
     }
 }

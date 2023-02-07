@@ -4,10 +4,13 @@ import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.screen.FXMLScreenHandler;
 import edu.hust.vn.screen.dock.DockScreenHandler;
 import edu.hust.vn.utils.Configs;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
+import javafx.beans.binding.Bindings;
 import java.io.IOException;
 
 public class DockCardHandler extends FXMLScreenHandler {
@@ -35,9 +38,12 @@ public class DockCardHandler extends FXMLScreenHandler {
 
     private Dock dock;
 
+    public BooleanProperty show = new SimpleBooleanProperty();
+
     public DockCardHandler(String screenPath, Dock dock) throws IOException {
         super(screenPath);
         this.dock = dock;
+        show.set(true);
         setDockInfo();
         selectDockBtn.setOnMouseClicked(e -> {
             try {
@@ -50,10 +56,10 @@ public class DockCardHandler extends FXMLScreenHandler {
     }
 
     private void setDockInfo() {
-        dockName.setText(dock.getName());
-        dockAddress.setText(dock.getAddress());
-        dockArea.setText(String.valueOf(dock.getArea()));
-        dockCapacity.setText(String.valueOf(dock.getCapacity()));
+        dockName.textProperty().bind(dock.nameProperty());
+        dockAddress.textProperty().bind(dock.addressProperty());
+        dockArea.textProperty().bind(dock.areaProperty().asString());
+        dockCapacity.textProperty().bind(dock.capacityProperty().asString());
         dockAvailableLots.setText(String.valueOf(dock.getAvailableLots()));
         dockAvailableBikes.setText(String.valueOf(dock.getAvailableBikes()));
         dock.getLocks().forEach(lock -> {
@@ -66,5 +72,13 @@ public class DockCardHandler extends FXMLScreenHandler {
 
     public int getDockID(){
         return dock.getId();
+    }
+
+    public boolean getShow(){
+        return show.get();
+    }
+
+    public void setShow(boolean val){
+        show.set(true);
     }
 }

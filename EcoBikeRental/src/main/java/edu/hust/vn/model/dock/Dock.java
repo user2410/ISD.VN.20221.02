@@ -1,7 +1,7 @@
 package edu.hust.vn.model.dock;
 
 import javafx.beans.Observable;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -10,10 +10,10 @@ import java.util.List;
 
 public class Dock {
     private int id;
-    private String name;
-    private String address;
-    private float area;
-    private int capacity;
+    private StringProperty name = new SimpleStringProperty();
+    private StringProperty address = new SimpleStringProperty();
+    private FloatProperty area = new SimpleFloatProperty();
+    private IntegerProperty capacity = new SimpleIntegerProperty();
 
     private ObservableList<Lock> locks;
 
@@ -28,39 +28,63 @@ public class Dock {
     public void setId(int id) {
         this.id = id;
     }
-
-    public String getName() {
+    
+    public StringProperty nameProperty() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public String getName() {
+        return name.get();
     }
 
-    public String getAddress() {
+    public void setName(String name) {
+        this.name.set(name);
+    }
+
+    public StringProperty addressProperty() {
         return address;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public String getAddress() {
+        return address.get();
     }
 
-    public float getArea() {
+    public void setAddress(String address) {
+        this.address.set(address);
+    }
+
+    public FloatProperty areaProperty() {
         return area;
     }
 
-    public void setArea(float area) {
-        this.area = area;
+    public float getArea() {
+        return area.get();
     }
 
-    public int getCapacity() {
+    public void setArea(float area) {
+        this.area.set(area);
+    }
+
+    public IntegerProperty capacityProperty() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
+    public int getCapacity() {
+        return capacity.get();
     }
 
+    public void setCapacity(int capacity) {
+        this.capacity.set(capacity);
+    }
+
+    public Lock getLockByBarCode(String barCode){
+        for(Lock l : locks){
+            if(l.getBarCode().equals(barCode)){
+                return l;
+            }
+        }
+        return null;
+    }
     public ObservableList<Lock> getLocks() {
         return locks;
     }

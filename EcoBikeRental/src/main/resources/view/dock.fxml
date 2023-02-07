@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="689.0" prefWidth="907.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="689.0" prefWidth="907.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
@@ -42,14 +42,15 @@
                   <Insets left="20.0" right="20.0" />
                </HBox.margin>
             </Label>
-            <Label fx:id="availableBikes" prefHeight="25.0" prefWidth="123.0" text="Available bikes" HBox.hgrow="ALWAYS">
+            <Label fx:id="availableBikes" prefHeight="22.0" prefWidth="167.0" text="Available bikes" HBox.hgrow="ALWAYS">
                <HBox.margin>
                   <Insets left="20.0" right="20.0" />
                </HBox.margin>
             </Label>
-            <Label fx:id="address" prefHeight="22.0" prefWidth="175.0" text="Address" HBox.hgrow="ALWAYS">
+            <Label prefHeight="33.0" prefWidth="61.0" text="Address: " />
+            <Label fx:id="address" prefHeight="22.0" prefWidth="158.0" text="Address" HBox.hgrow="ALWAYS">
                <HBox.margin>
-                  <Insets left="20.0" right="20.0" />
+                  <Insets left="5.0" right="20.0" />
                </HBox.margin>
             </Label>
          </children>

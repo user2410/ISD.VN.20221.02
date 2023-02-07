@@ -10,7 +10,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.SQLException;
 
-public class BaseScreenHandler extends FXMLScreenHandler{
+public abstract class BaseScreenHandler extends FXMLScreenHandler{
 
     private Scene scene;
     private static final Stage stage;
@@ -41,9 +41,12 @@ public class BaseScreenHandler extends FXMLScreenHandler{
         if(this.scene == null){
             this.scene = new Scene(this.content);
         }
+        onShow();
         stage.setScene(this.scene);
         stage.show();
     }
+
+    public abstract void onShow();
 
     public void setScreenTitle(String string) {
         stage.setTitle(string);
