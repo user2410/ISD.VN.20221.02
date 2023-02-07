@@ -1,12 +1,15 @@
 package edu.hust.vn.screen;
 
-import edu.hust.vn.Main;
+import edu.hust.vn.DataStore;
+import edu.hust.vn.screen.home.HomeScreenHandler;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -35,12 +38,19 @@ public class SplashScreenHandler implements Initializable {
             fadeOut.play();
         });
 
+        // Initializing data
+        DataStore.getInstance();
+
         // After fade out, load actual content
         fadeOut.setOnFinished((e) -> {
+            Stage currentStage = (Stage) splash_root.getScene().getWindow();
+            currentStage.close();
             try {
-                Main.mainWindow.close();
-            } catch (Exception e1) {
-                e1.printStackTrace();
+                HomeScreenHandler homeScreenHandler = HomeScreenHandler.getHomeScreenHandler();
+                homeScreenHandler.setScreenTitle("Home Screen");
+                homeScreenHandler.show();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
     }

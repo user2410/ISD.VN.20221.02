@@ -18,7 +18,7 @@ CREATE TABLE "Bike" (
   "id" bigserial PRIMARY KEY,
   "licensePlate" varchar NOT NULL,
   "price" integer NOT NULL,
-  "type" BIKE_TYPE NOT NULL
+  "type" "BIKE_TYPE" NOT NULL
 );
 
 CREATE TABLE "EBike" (
@@ -39,7 +39,7 @@ CREATE TABLE "Lock" (
   "barCode" varchar,
   "bikeId" bigint,
   "dockId" bigint NOT NULL,
-  "status" LOCK_STATUS NOT NULL DEFAULT 'RELEASED',
+  "status" "LOCK_STATUS" NOT NULL DEFAULT 'RELEASED',
   PRIMARY KEY ("id", "barCode")
 );
 
@@ -63,7 +63,7 @@ CREATE TABLE "Return" (
 CREATE TABLE "Invoice" (
   "id" bigserial PRIMARY KEY,
   "rid" bigint NOT NULL,
-  "rtype" INVOICE_OF NOT NULL,
+  "rtype" "INVOICE_OF" NOT NULL,
   "totalAmount" integer NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT (now())
 );
