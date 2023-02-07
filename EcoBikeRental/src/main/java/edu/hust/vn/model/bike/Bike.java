@@ -1,8 +1,11 @@
 package edu.hust.vn.model.bike;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class Bike {
     protected int id;
-    protected String licensePlate;
+    protected StringProperty licensePlate = new SimpleStringProperty();
     protected int nSaddles;
     protected int nPedals;
     protected int price;
@@ -21,12 +24,16 @@ public class Bike {
         this.id = id;
     }
 
-    public String getLicensePlate() {
+    public StringProperty licensePlateProperty() {
         return licensePlate;
     }
 
+    public String getLicensePlate() {
+        return licensePlate.get();
+    }
+
     public void setLicensePlate(String licensePlate) {
-        this.licensePlate = licensePlate;
+        this.licensePlate.set(licensePlate);
     }
 
     public int getnSaddles() {

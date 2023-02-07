@@ -9,18 +9,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
-public class HomeScreenHandler extends BaseScreenHandler implements Initializable {
+public class HomeScreenHandler extends BaseScreenHandler{
 
     @FXML
     private ImageView erbImage;
@@ -38,21 +32,7 @@ public class HomeScreenHandler extends BaseScreenHandler implements Initializabl
 
     private HomeScreenHandler(String screenPath) throws IOException {
         super(screenPath);
-    }
 
-    public static HomeScreenHandler getHomeScreenHandler() throws IOException {
-        if(homeScreenHandler == null){
-            synchronized (HomeScreenHandler.class){
-                if(homeScreenHandler == null){
-                    homeScreenHandler = new HomeScreenHandler(Configs.HOME_SCREEN_PATH);
-                }
-            }
-        }
-        return homeScreenHandler;
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
         homeItems = FXCollections.observableArrayList();
 
         HomeController homectl = new HomeController();
@@ -88,7 +68,6 @@ public class HomeScreenHandler extends BaseScreenHandler implements Initializabl
 
         try{
             for(Dock dock : dockList){
-                System.out.println(dock);
                 DockCardHandler dockCardHandler = new DockCardHandler(Configs.DOCK_CARD_PATH, dock);
                 this.homeItems.add(dockCardHandler);
                 docksView.getChildren().add(dockCardHandler.getContent());
@@ -115,6 +94,16 @@ public class HomeScreenHandler extends BaseScreenHandler implements Initializabl
         rentedBikeImg.setOnMouseClicked(e -> {
 
         });
+    }
 
+    public static HomeScreenHandler getHomeScreenHandler() throws IOException {
+        if(homeScreenHandler == null){
+            synchronized (HomeScreenHandler.class){
+                if(homeScreenHandler == null){
+                    homeScreenHandler = new HomeScreenHandler(Configs.HOME_SCREEN_PATH);
+                }
+            }
+        }
+        return homeScreenHandler;
     }
 }

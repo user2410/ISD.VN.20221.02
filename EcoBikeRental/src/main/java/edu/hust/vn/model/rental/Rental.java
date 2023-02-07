@@ -11,16 +11,10 @@ public class Rental {
     private Dock dock;
     private Bike bike;
     private LocalDateTime startTime;
-    private LocalDateTime endTime;
     private LocalDateTime lastActiveTime;
     private boolean active;
-    private PaymentTransaction rentalTransaction;
-    private PaymentTransaction returnTransaction;
 
-    public Rental(String id, Bike bike, LocalDateTime startTime, PaymentTransaction rentalTransaction) {
-        this.id = id;
-        this.bike = bike;
-        this.startTime = startTime;
-        this.rentalTransaction = rentalTransaction;
-    }
+    public Rental() {}
+
+
 }

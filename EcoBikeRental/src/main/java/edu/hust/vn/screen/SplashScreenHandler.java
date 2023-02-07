@@ -47,7 +47,6 @@ public class SplashScreenHandler implements Initializable {
             currentStage.close();
             try {
                 HomeScreenHandler homeScreenHandler = HomeScreenHandler.getHomeScreenHandler();
-                homeScreenHandler.setScreenTitle("Home Screen");
                 homeScreenHandler.show();
             } catch (IOException ex) {
                 ex.printStackTrace();

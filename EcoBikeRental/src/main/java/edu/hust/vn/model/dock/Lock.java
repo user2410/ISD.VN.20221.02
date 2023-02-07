@@ -5,7 +5,7 @@ import javafx.beans.property.*;
 
 public class Lock {
     private int id;
-    private String barCode;
+    private StringProperty barCode = new SimpleStringProperty();
     private ObjectProperty<Bike> bike = new SimpleObjectProperty<>();
     private int dockId;
     private Dock dock;
@@ -24,12 +24,16 @@ public class Lock {
         this.id = id;
     }
 
-    public String getBarCode() {
+    public StringProperty barCodeProperty() {
         return barCode;
     }
 
+    public String getBarCode() {
+        return barCode.get();
+    }
+
     public void setBarCode(String barCode) {
-        this.barCode = barCode;
+        this.barCode.set(barCode);
     }
 
     public int getDockId() {

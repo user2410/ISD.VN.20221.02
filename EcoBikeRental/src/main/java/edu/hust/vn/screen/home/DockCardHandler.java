@@ -2,6 +2,8 @@ package edu.hust.vn.screen.home;
 
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.screen.FXMLScreenHandler;
+import edu.hust.vn.screen.dock.DockScreenHandler;
+import edu.hust.vn.utils.Configs;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -38,7 +40,12 @@ public class DockCardHandler extends FXMLScreenHandler {
         this.dock = dock;
         setDockInfo();
         selectDockBtn.setOnMouseClicked(e -> {
-
+            try {
+                DockScreenHandler dockScreen = new DockScreenHandler(Configs.DOCK_SCREEN_PATH, this.dock);
+                dockScreen.show();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         });
     }
 
