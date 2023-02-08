@@ -1,12 +1,19 @@
 package edu.hust.vn.screen.dock;
 
+import edu.hust.vn.common.exception.InvalidBarcodeException;
+import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
+import edu.hust.vn.model.bike.StandardBike;
 import edu.hust.vn.model.bike.StandardEBike;
+import edu.hust.vn.model.bike.TwinBike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenHandler;
+import edu.hust.vn.screen.factory.HomeScreenFactory;
 import edu.hust.vn.screen.home.HomeScreenHandler;
-import javafx.collections.FXCollections;
+import edu.hust.vn.screen.popup.MessagePopup;
+import edu.hust.vn.utils.Configs;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -14,7 +21,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
-import java.sql.SQLException;
 
 public class DockScreenHandler extends BaseScreenHandler {
 
@@ -49,15 +55,18 @@ public class DockScreenHandler extends BaseScreenHandler {
     private TableView<DockBike> standardTBikeTbl;
 
     private Dock dock;
-    public DockScreenHandler(String screenPath, Dock dock) throws IOException {
-        super(screenPath);
+
+    public DockScreenHandler(Dock dock) throws IOException {
+        super(Configs.DOCK_SCREEN_PATH);
 
         setScreenTitle("Dock Screen");
+
+        setBaseController(new ViewDockController());
 
         this.dock = dock;
         ebrImage.setOnMouseClicked(e -> {
             try {
-                HomeScreenHandler.getHomeScreenHandler().show();
+                HomeScreenFactory.getInstance().show();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -75,18 +84,16 @@ public class DockScreenHandler extends BaseScreenHandler {
                 continue;
             }
             Bike bike = lock.getBike();
-            switch (bike.getType()){
-                case STANDARD_BIKE:
-                    standardBikeTbl.getItems().add(new DockBike(bike, lock));
-                    break;
-                case TWIN_BIKE:
-                    standardTBikeTbl.getItems().add(new DockBike(bike, lock));
-                    break;
-                case STANDARD_EBIKE:
-                    standardEBikeTbl.getItems().add(new DockEBike((StandardEBike) bike, lock));
-                    break;
+            if(bike instanceof StandardBike){
+                standardBikeTbl.getItems().add(new DockBike(this, bike, lock));
+            } else if (bike instanceof StandardEBike) {
+                standardEBikeTbl.getItems().add(new DockEBike(this, (StandardEBike) bike, lock));
+            } else if (bike instanceof TwinBike) {
+                standardTBikeTbl.getItems().add(new DockBike(this, bike, lock));
             }
         }
+
+        barCodeSubmitBtn.setOnMouseClicked(e -> selectBike(barCodeInput.getText()));
     }
 
     private void initTable(TableView tbl) {
@@ -94,8 +101,8 @@ public class DockScreenHandler extends BaseScreenHandler {
         licensePlateCol.setCellValueFactory(new PropertyValueFactory<>("licensePlate"));
         TableColumn<DockBike, String> barCodeCol = new TableColumn<>("Bar code");
         barCodeCol.setCellValueFactory(new PropertyValueFactory<>("barCode"));
-        TableColumn<DockBike, Button> rentBikeCol = new TableColumn<>("Rent this bike");
-        rentBikeCol.setCellValueFactory(new PropertyValueFactory<>("rentBike"));
+        TableColumn<DockBike, Button> rentBikeCol = new TableColumn<>("View this bike");
+        rentBikeCol.setCellValueFactory(new PropertyValueFactory<>("selectBike"));
 
         if(tbl == standardEBikeTbl){
             TableColumn<DockEBike, Float> batteryLifeCol = new TableColumn<>("Battery life");
@@ -109,17 +116,33 @@ public class DockScreenHandler extends BaseScreenHandler {
         }
     }
 
-    void requestToRentBike() throws SQLException, IOException {
-        try {
-
-        }catch (Exception e){
-
-        }
-    }
-
     @Override
     public void onShow() {
         availableLots.setText("Available lots: "+dock.getAvailableLots());
         availableBikes.setText("Available bikes: "+dock.getAvailableBikes());
+    }
+
+    public void selectBike(String barCode){
+        ViewDockController ctl = (ViewDockController) getBaseController();
+        try{
+            try{
+                Lock lock = ctl.validateBarCode(this.dock, barCode);
+                Bike bike = lock.getBike();
+                if(bike == null){
+                    new MessagePopup("No bike attached to Lock with bar code "+barCode, false).show();
+                }else{
+                    new BikeScreenHandler(bike).show();
+                }
+            } catch (InvalidBarcodeException e) {
+                new MessagePopup("Invalid bar code: "+barCode, true).show();
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+            try {
+                new MessagePopup("System error "+e.getMessage(), true).show();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }

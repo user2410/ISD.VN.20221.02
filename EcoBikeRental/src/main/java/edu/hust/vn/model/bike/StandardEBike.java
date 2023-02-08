@@ -1,29 +1,42 @@
 package edu.hust.vn.model.bike;
 
+import javafx.beans.property.FloatProperty;
+import javafx.beans.property.SimpleFloatProperty;
+
 public class StandardEBike extends Bike{
-    private float batteryLife;
+    private FloatProperty batteryLife = new SimpleFloatProperty();
 
-    private float remainingBatteryLife;
+    private FloatProperty remainingBatteryLife = new SimpleFloatProperty();
 
-    public StandardEBike(Bike bike, float batteryLife){
-        this.id = bike.id;
-        this.licensePlate = bike.licensePlate;
+    public StandardEBike(float batteryLife){
         this.nPedals = 2;
         this.nSaddles = 1;
-        this.type = BIKE_TYPE.STANDARD_BIKE;
-        this.price = bike.price;
-        this.batteryLife = this.remainingBatteryLife = batteryLife;
+        this.batteryLife.set(batteryLife);
+        this.remainingBatteryLife.set(batteryLife);
     }
 
-    public float getBatteryLife() {
+    public FloatProperty batteryLifeProperty() {
         return batteryLife;
     }
 
-    public float getRemainingBatteryLife() {
+    public float getBatteryLife() {
+        return batteryLife.get();
+    }
+
+    public FloatProperty remainingBatteryLifeProperty() {
         return remainingBatteryLife;
     }
 
+    public float getRemainingBatteryLife() {
+        return remainingBatteryLife.get();
+    }
+
     public void setRemainingBatteryLife(float remainingBatteryLife) {
-        this.remainingBatteryLife = remainingBatteryLife;
+        this.remainingBatteryLife.set(remainingBatteryLife);
+    }
+
+    @Override
+    public String typeAsString() {
+        return "STANDARD_EBIKE";
     }
 }

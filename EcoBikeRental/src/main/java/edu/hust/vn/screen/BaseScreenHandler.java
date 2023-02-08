@@ -29,7 +29,7 @@ public abstract class BaseScreenHandler extends FXMLScreenHandler{
             Platform.exit();
         });
     }
-    protected static HomeScreenHandler homeScreenHandler;
+    protected static volatile HomeScreenHandler homeScreenHandler;
     private BaseScreenHandler prevScreenHandler;
     private BaseController baseController;
 

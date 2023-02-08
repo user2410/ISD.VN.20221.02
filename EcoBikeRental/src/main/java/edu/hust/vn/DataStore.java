@@ -7,6 +7,8 @@ import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.DockDAO;
 import edu.hust.vn.model.dock.LockDAO;
 import edu.hust.vn.utils.Configs;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -21,7 +23,7 @@ public class DataStore {
     public DockDAO dockDAO;
     public BikeDAO bikeDAO;
 
-    public Bike rentedBike;
+    public ObjectProperty<Bike> rentedBike;
 
     public ObservableList<Dock> dockList;
     public ObservableList<Bike> bikeList;
@@ -34,6 +36,8 @@ public class DataStore {
             dockDAO = new DockDAO(dbConn);
             lockDAO = new LockDAO(dbConn);
             bikeDAO = new BikeDAO(dbConn);
+
+            rentedBike = new SimpleObjectProperty<>(null);
 
         } catch (Exception e) {
             e.printStackTrace();

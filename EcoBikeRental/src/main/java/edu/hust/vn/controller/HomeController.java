@@ -9,15 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeController extends BaseController {
-    /**
-     * this methods get all Docks in Database
-     *
-     * @return List[Dock]
-     * @throws java.sql.SQLException
-     */
-    public ObservableList<Dock> getAllDocks() {
-        return DataStore.getInstance().dockList;
-    }
 
     /**
      * filter docks by name or address
@@ -26,8 +17,12 @@ public class HomeController extends BaseController {
      */
     public ArrayList<Dock> searchDockList(String keyword) {
         ArrayList<Dock> res = new ArrayList();
+        String lowerKW = keyword.toLowerCase();
         DataStore.getInstance().dockList.forEach(dock -> {
-            if(dock.getName().contains(keyword) || dock.getAddress().contains(keyword)) res.add(dock);
+            if(dock.getName().toLowerCase().contains(lowerKW)
+                || dock.getAddress().toLowerCase().contains(lowerKW)) {
+                res.add(dock);
+            }
         });
         return res;
     }

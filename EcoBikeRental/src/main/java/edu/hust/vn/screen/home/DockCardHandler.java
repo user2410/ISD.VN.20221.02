@@ -3,6 +3,7 @@ package edu.hust.vn.screen.home;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.screen.FXMLScreenHandler;
 import edu.hust.vn.screen.dock.DockScreenHandler;
+import edu.hust.vn.screen.factory.DockScreenFactory;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -40,14 +41,14 @@ public class DockCardHandler extends FXMLScreenHandler {
 
     public BooleanProperty show = new SimpleBooleanProperty();
 
-    public DockCardHandler(String screenPath, Dock dock) throws IOException {
-        super(screenPath);
+    public DockCardHandler(Dock dock) throws IOException {
+        super(Configs.DOCK_CARD_PATH);
         this.dock = dock;
         show.set(true);
         setDockInfo();
         selectDockBtn.setOnMouseClicked(e -> {
             try {
-                DockScreenHandler dockScreen = new DockScreenHandler(Configs.DOCK_SCREEN_PATH, this.dock);
+                DockScreenHandler dockScreen = DockScreenFactory.getInstance(this.dock);
                 dockScreen.show();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -79,6 +80,6 @@ public class DockCardHandler extends FXMLScreenHandler {
     }
 
     public void setShow(boolean val){
-        show.set(true);
+        show.set(val);
     }
 }

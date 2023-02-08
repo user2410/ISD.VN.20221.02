@@ -10,14 +10,14 @@ import javafx.scene.control.Button;
 public class DockBike {
     protected Bike bike;
     protected Lock lock;
-    protected ObjectProperty<Button> rentBike = new SimpleObjectProperty<>();
+    protected ObjectProperty<Button> selectBike = new SimpleObjectProperty<>();
 
-    public DockBike(Bike bike, Lock lock) {
+    public DockBike(DockScreenHandler dockScreen, Bike bike, Lock lock) {
         this.bike = bike;
         this.lock = lock;
-        this.rentBike.set(new Button("Rent"));
-        this.rentBike.get().setOnMouseClicked(e->{
-            // Start rent bike sequence
+        this.selectBike.set(new Button("Select"));
+        this.selectBike.get().setOnMouseClicked(e->{
+            dockScreen.selectBike(lock.getBarCode());
         });
     }
 
@@ -45,11 +45,11 @@ public class DockBike {
         this.lock.setBarCode(barCode);
     }
 
-    public ObjectProperty<Button> rentBikeProperty(){
-        return rentBike;
+    public ObjectProperty<Button> selectBikeProperty(){
+        return selectBike;
     }
 
-    public Button getRentBike() {
-        return rentBike.get();
+    public Button getSelectBike() {
+        return selectBike.get();
     }
 }

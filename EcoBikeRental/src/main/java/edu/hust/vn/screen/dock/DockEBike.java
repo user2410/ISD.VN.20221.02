@@ -3,23 +3,21 @@ package edu.hust.vn.screen.dock;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.StandardEBike;
 import edu.hust.vn.model.dock.Lock;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.FloatProperty;
 
 public class DockEBike extends DockBike {
 
-    private float batteryLife;
-
-    private float remainingBatteryLife;
-
-    public DockEBike(StandardEBike bike, Lock lock) {
-        super(bike, lock);
-        this.remainingBatteryLife = batteryLife;
+    public DockEBike(DockScreenHandler dockScreen, StandardEBike bike, Lock lock) {
+        super(dockScreen, bike, lock);
     }
 
-    public float getBatteryLife() {
-        return batteryLife;
+    public FloatProperty batteryLifeProperty(){
+        return ((StandardEBike)bike).batteryLifeProperty();
     }
 
-    public float getRemainingBatteryLife() {
-        return remainingBatteryLife;
+    public FloatProperty remainingBatteryLifeProperty(){
+        return ((StandardEBike)bike).remainingBatteryLifeProperty();
     }
+
 }

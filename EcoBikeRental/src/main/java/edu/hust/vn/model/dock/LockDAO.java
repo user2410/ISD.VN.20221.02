@@ -2,6 +2,7 @@ package edu.hust.vn.model.dock;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.model.DAO;
+import edu.hust.vn.model.bike.Bike;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -44,7 +45,10 @@ public class LockDAO extends DAO {
                     lock.setId(resultSet.getInt("id"));
                     lock.setBarCode(resultSet.getString("barCode"));
                     lock.setDockId(resultSet.getInt("dockId"));
-                    lock.setBike(DataStore.getInstance().getBikeById(lock.getId()));
+                    int bikeId = resultSet.getInt("bikeId");
+                    Bike attachedBike = DataStore.getInstance().getBikeById(bikeId);
+                    lock.setBike(attachedBike);
+                    attachedBike.setLock(lock);
                     locks.add(lock);
                 }
             }

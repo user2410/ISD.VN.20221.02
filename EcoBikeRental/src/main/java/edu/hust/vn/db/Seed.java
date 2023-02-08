@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public class Seed {
 
-    private static final Bike.BIKE_TYPE[] BIKE_TYPES = {Bike.BIKE_TYPE.STANDARD_BIKE, Bike.BIKE_TYPE.STANDARD_EBIKE, Bike.BIKE_TYPE.TWIN_BIKE};
+    private static final String[] BIKE_TYPES = {"STANDARD_BIKE", "STANDARD_EBIKE", "TWIN_BIKE"};
 
     private static final Random RANDOM = new Random();
 
@@ -30,12 +30,12 @@ public class Seed {
                 PreparedStatement.RETURN_GENERATED_KEYS);
             PreparedStatement psEBike = conn.prepareStatement("INSERT INTO \"EBike\" (id, \"batteryLife\") VALUES (?, ?)");
             for (int i = 0; i < count; i++) {
-                Bike.BIKE_TYPE type = BIKE_TYPES[RANDOM.nextInt(BIKE_TYPES.length)];
+                String type = BIKE_TYPES[RANDOM.nextInt(BIKE_TYPES.length)];
                 psBike.setString(1, "Bike" + i);
                 psBike.setInt(2, RANDOM.nextInt(1000) + 1);
                 psBike.setObject(3, type, Types.OTHER);
                 psBike.executeUpdate();
-                if (type == Bike.BIKE_TYPE.STANDARD_EBIKE) {
+                if (type.equals("STANDARD_EBIKE")) {
                     ResultSet rs = psBike.getGeneratedKeys();
                     if (rs.next()) {
                         long bikeId = rs.getLong(1);

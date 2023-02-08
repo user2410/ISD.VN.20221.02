@@ -1,6 +1,7 @@
 package edu.hust.vn.screen;
 
 import edu.hust.vn.DataStore;
+import edu.hust.vn.screen.factory.HomeScreenFactory;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import javafx.animation.FadeTransition;
 import javafx.fxml.FXML;
@@ -46,7 +47,7 @@ public class SplashScreenHandler implements Initializable {
             Stage currentStage = (Stage) splash_root.getScene().getWindow();
             currentStage.close();
             try {
-                HomeScreenHandler homeScreenHandler = HomeScreenHandler.getHomeScreenHandler();
+                HomeScreenHandler homeScreenHandler = HomeScreenFactory.getInstance();
                 homeScreenHandler.show();
             } catch (IOException ex) {
                 ex.printStackTrace();

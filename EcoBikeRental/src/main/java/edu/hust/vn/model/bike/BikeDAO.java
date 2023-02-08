@@ -20,23 +20,23 @@ public class BikeDAO extends DAO {
         try(PreparedStatement statement = conn.prepareStatement("SELECT * FROM \"Bike\"")){
             try (ResultSet resultSet = statement.executeQuery()) {
                 while(resultSet.next()){
-                    Bike bike = new Bike();
-                    bike.setId(resultSet.getInt("id"));
-                    bike.setLicensePlate(resultSet.getString("licensePlate"));
-                    bike.setPrice(resultSet.getInt("price"));
+                    int id = resultSet.getInt("id");
+                    Bike bike;
                     String type = resultSet.getString("type");
                     if(type.equals("STANDARD_BIKE")){
-                        bike.setType(Bike.BIKE_TYPE.STANDARD_BIKE);
+                        bike = new StandardBike();
                     }else if(type.equals("TWIN_BIKE")){
-                        bike.setType(Bike.BIKE_TYPE.TWIN_BIKE);
+                        bike = new TwinBike();
                     }else{
-                        bike.setType(Bike.BIKE_TYPE.STANDARD_EBIKE);
                         PreparedStatement ebikeStmt = conn.prepareStatement("SELECT \"batteryLife\" FROM \"EBike\" WHERE id=? LIMIT 1");
-                        ebikeStmt.setInt(1, bike.getId());
+                        ebikeStmt.setInt(1, id);
                         ResultSet res = ebikeStmt.executeQuery();
                         res.next();
-                        bike = new StandardEBike(bike, res.getInt("batteryLife"));
+                        bike = new StandardEBike(res.getInt("batteryLife"));
                     }
+                    bike.setId(id);
+                    bike.setLicensePlate(resultSet.getString("licensePlate"));
+                    bike.setPrice(resultSet.getInt("price"));
                     bikes.add(bike);
                 }
             }

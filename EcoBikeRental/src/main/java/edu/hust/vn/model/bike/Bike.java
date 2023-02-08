@@ -1,18 +1,15 @@
 package edu.hust.vn.model.bike;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import edu.hust.vn.model.dock.Lock;
+import javafx.beans.property.*;
 
-public class Bike {
+public abstract class Bike {
     protected int id;
     protected StringProperty licensePlate = new SimpleStringProperty();
     protected int nSaddles;
     protected int nPedals;
-    protected int price;
-    public enum BIKE_TYPE{
-        STANDARD_BIKE, STANDARD_EBIKE, TWIN_BIKE
-    }
-    protected BIKE_TYPE type;
+    protected IntegerProperty price = new SimpleIntegerProperty();
+    protected ObjectProperty<Lock> lock = new SimpleObjectProperty<>(null);
 
     public Bike(){}
 
@@ -44,19 +41,29 @@ public class Bike {
         return nPedals;
     }
 
-    public int getPrice() {
+    public IntegerProperty priceProperty() {
         return price;
     }
 
+    public int getPrice() {
+        return price.get();
+    }
+
     public void setPrice(int price) {
-        this.price = price;
+        this.price.set(price);
     }
 
-    public BIKE_TYPE getType() {
-        return type;
+    public ObjectProperty<Lock> lockProperty() {
+        return lock;
     }
 
-    public void setType(BIKE_TYPE type) {
-        this.type = type;
+    public Lock getLock() {
+        return lock.get();
     }
+
+    public void setLock(Lock lock) {
+        this.lock.set(lock);
+    }
+
+    public abstract String typeAsString();
 }
