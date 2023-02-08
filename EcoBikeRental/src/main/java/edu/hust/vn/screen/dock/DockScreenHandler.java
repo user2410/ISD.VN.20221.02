@@ -1,5 +1,6 @@
 package edu.hust.vn.screen.dock;
 
+import edu.hust.vn.common.exception.BarCodeNotFoundException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
@@ -10,11 +11,12 @@ import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
-import edu.hust.vn.screen.factory.HomeScreenFactory;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -54,9 +56,10 @@ public class DockScreenHandler extends BaseScreenHandler {
     @FXML
     private TableView<DockBike> standardTBikeTbl;
 
+    private static ObservableMap<Dock, DockScreenHandler> dockScreens = FXCollections.observableHashMap();
     private Dock dock;
 
-    public DockScreenHandler(Dock dock) throws IOException {
+    private DockScreenHandler(Dock dock) throws IOException {
         super(Configs.DOCK_SCREEN_PATH);
 
         setScreenTitle("Dock Screen");
@@ -66,7 +69,7 @@ public class DockScreenHandler extends BaseScreenHandler {
         this.dock = dock;
         ebrImage.setOnMouseClicked(e -> {
             try {
-                HomeScreenFactory.getInstance().show();
+                HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -94,6 +97,17 @@ public class DockScreenHandler extends BaseScreenHandler {
         }
 
         barCodeSubmitBtn.setOnMouseClicked(e -> selectBike(barCodeInput.getText()));
+    }
+
+    public static DockScreenHandler getInstance(Dock dock) throws IOException {
+        if(!dockScreens.containsKey(dock)){
+            synchronized (DockScreenHandler.class){
+                if(!dockScreens.containsKey(dock)){
+                    dockScreens.put(dock, new DockScreenHandler(dock));
+                }
+            }
+        }
+        return dockScreens.get(dock);
     }
 
     private void initTable(TableView tbl) {
@@ -128,18 +142,16 @@ public class DockScreenHandler extends BaseScreenHandler {
             try{
                 Lock lock = ctl.validateBarCode(this.dock, barCode);
                 Bike bike = lock.getBike();
-                if(bike == null){
-                    new MessagePopup("No bike attached to Lock with bar code "+barCode, false).show();
-                }else{
-                    new BikeScreenHandler(bike).show();
-                }
+                BikeScreenHandler.getInstance(bike).show();
             } catch (InvalidBarcodeException e) {
-                new MessagePopup("Invalid bar code: "+barCode, true).show();
+                MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
+            } catch (BarCodeNotFoundException e){
+                MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
             }
         } catch (IOException e){
             e.printStackTrace();
             try {
-                new MessagePopup("System error "+e.getMessage(), true).show();
+                MessagePopup.getInstance().show("System error "+e.getMessage(), true);
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

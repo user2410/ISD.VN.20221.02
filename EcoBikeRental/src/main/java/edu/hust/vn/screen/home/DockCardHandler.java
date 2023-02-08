@@ -3,15 +3,15 @@ package edu.hust.vn.screen.home;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.screen.FXMLScreenHandler;
 import edu.hust.vn.screen.dock.DockScreenHandler;
-import edu.hust.vn.screen.factory.DockScreenFactory;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 
-import javafx.beans.binding.Bindings;
 import java.io.IOException;
 
 public class DockCardHandler extends FXMLScreenHandler {
@@ -37,23 +37,35 @@ public class DockCardHandler extends FXMLScreenHandler {
     @FXML
     private Button selectDockBtn;
 
+    private static ObservableMap<Dock, DockCardHandler> dockCards = FXCollections.observableHashMap();
     private Dock dock;
 
     public BooleanProperty show = new SimpleBooleanProperty();
 
-    public DockCardHandler(Dock dock) throws IOException {
+    private DockCardHandler(Dock dock) throws IOException {
         super(Configs.DOCK_CARD_PATH);
         this.dock = dock;
         show.set(true);
         setDockInfo();
         selectDockBtn.setOnMouseClicked(e -> {
             try {
-                DockScreenHandler dockScreen = DockScreenFactory.getInstance(this.dock);
+                DockScreenHandler dockScreen = DockScreenHandler.getInstance(this.dock);
                 dockScreen.show();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
+    }
+
+    public static DockCardHandler getInstance(Dock dock) throws IOException {
+        if(!dockCards.containsKey(dock)){
+            synchronized (DockCardHandler.class){
+                if(!dockCards.containsKey(dock)){
+                    dockCards.put(dock, new DockCardHandler(dock));
+                }
+            }
+        }
+        return dockCards.get(dock);
     }
 
     private void setDockInfo() {

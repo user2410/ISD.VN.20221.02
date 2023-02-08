@@ -4,14 +4,16 @@ import edu.hust.vn.DataStore;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.StandardEBike;
 import edu.hust.vn.model.bike.TwinBike;
-import edu.hust.vn.model.dock.Dock;
+import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
-import edu.hust.vn.screen.factory.HomeScreenFactory;
 import edu.hust.vn.screen.home.HomeScreenHandler;
+import edu.hust.vn.screen.payment.PaymentFormHandler;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -84,9 +86,11 @@ public class BikeScreenHandler extends BaseScreenHandler {
     @FXML
     private Button actionBtn;
 
+    private static ObservableMap<Bike, BikeScreenHandler> bikeScreens = FXCollections.observableHashMap();
+
     private Bike bike;
 
-    public BikeScreenHandler(Bike bike) throws IOException {
+    private BikeScreenHandler(Bike bike) throws IOException {
         super(Configs.BIKE_SCREEN_PATH);
         this.bike = bike;
 
@@ -94,15 +98,14 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
         ebrImage.setOnMouseClicked(e->{
             try {
-                HomeScreenFactory.getInstance().show();
+                HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-        String pathname = Configs.IMAGE_PATH + "/bike/"+bike.typeAsString()+".png";
-        System.out.println(pathname);
-        File file = new File(pathname);
+//        System.out.println(pathname);
+        File file = new File(Configs.IMAGE_PATH + "/bike/"+bike.typeAsString()+".png");
         Image img = new Image(file.toURI().toString());
         bikeImage.setImage(img);
 
@@ -130,36 +133,61 @@ public class BikeScreenHandler extends BaseScreenHandler {
         ObjectProperty<Bike> rentedBike = DataStore.getInstance().rentedBike;
         rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
         timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
-        rentedBike.addListener((observable, oldValue, newValue) -> {
-            if(newValue == this.bike){
+        actionBtn.textProperty().bind(Bindings.createStringBinding(() -> {
+            if(rentedBike.get() == this.bike){
                 actionBtn.setStyle("-fx-background-color: red");
                 actionBtn.setStyle("-fx-text-fill: white");
-                actionBtn.removeEventHandler(MouseEvent.MOUSE_CLICKED, handleRentBike);
-                actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, handleReturnBike);
-            }else{
-                actionBtn.setStyle("-fx-background-color: white");
-                actionBtn.setStyle("-fx-text-fill: black");
-                actionBtn.removeEventHandler(MouseEvent.MOUSE_CLICKED, handleReturnBike);
-                actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, handleRentBike);
-                actionBtn.setDisable(newValue != null);
+                actionBtn.setOnAction(null);
+                actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToRenturnBike);
+                return "Renturn this bike";
             }
-        });
+            actionBtn.setStyle("-fx-background-color: white");
+            actionBtn.setStyle("-fx-text-fill: black");
+            actionBtn.setOnAction(null);
+            actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToRentBike);
+            actionBtn.setDisable(rentedBike.get() != null);
+            return "Rent this bike";
+        }, rentedBike));
+    }
+
+    public static BikeScreenHandler getInstance(Bike bike) throws IOException {
+        if(!bikeScreens.containsKey(bike)){
+            synchronized (BikeScreenHandler.class){
+                if(!bikeScreens.containsKey(bike)){
+                    bikeScreens.put(bike, new BikeScreenHandler(bike));
+                }
+            }
+        }
+        return bikeScreens.get(bike);
     }
 
     @Override
     public void onShow() {}
 
-    private EventHandler handleRentBike = new EventHandler() {
+    private EventHandler requestToRentBike = new EventHandler() {
         @Override
         public void handle(Event event) {
+            try{
+//                RentBikeController rentBikeController = new RentBikeController();
+                System.out.println("rent bike");
+                
+                Rental rental = Rental.getInstance();
+                rental.setBike(bike);
+                rental.setDock(bike.getLock().getDock());
+
+                PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
+                paymentFormHandler.show();
+            }catch (IOException e){
+                e.printStackTrace();
+            }
 
         }
     };
 
-    private EventHandler handleReturnBike = new EventHandler() {
+    private EventHandler requestToRenturnBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-
+            System.out.println("renturn bike");
         }
     };
 }

@@ -14,6 +14,7 @@ public class Configs {
     public static final String DOCK_CARD_PATH = "/view/dock_card.fxml";
     public static final String DOCK_SCREEN_PATH = "/view/dock.fxml";
     public static final String BIKE_SCREEN_PATH = "/view/bike.fxml";
+    public static final String PAYMENT_FORM_PATH = "/view/payment_form.fxml";
 
     public static final String POPUP_MSG_SCREEN_PATH = "/view/message_popup.fxml";
 

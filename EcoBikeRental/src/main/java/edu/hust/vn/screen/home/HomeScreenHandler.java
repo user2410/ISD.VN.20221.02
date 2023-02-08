@@ -36,9 +36,10 @@ public class HomeScreenHandler extends BaseScreenHandler{
     @FXML
     private FlowPane docksView;
 
+    private static HomeScreenHandler instance;
     private ObservableList<DockCardHandler> homeItems;
 
-    public HomeScreenHandler() throws IOException {
+    private HomeScreenHandler() throws IOException {
         super(Configs.HOME_SCREEN_PATH);
 
         homeItems = FXCollections.observableArrayList();
@@ -50,7 +51,7 @@ public class HomeScreenHandler extends BaseScreenHandler{
 
         try{
             for(Dock dock : dockList){
-                DockCardHandler dockCardHandler = new DockCardHandler(dock);
+                DockCardHandler dockCardHandler = DockCardHandler.getInstance(dock);
                 this.homeItems.add(dockCardHandler);
                 docksView.getChildren().add(dockCardHandler.getContent());
             }
@@ -99,6 +100,17 @@ public class HomeScreenHandler extends BaseScreenHandler{
                 dc.setShow(inRes);
             }
         });
+    }
+
+    public static HomeScreenHandler getInstance() throws IOException {
+        if(instance == null){
+            synchronized (HomeScreenHandler.class){
+                if(instance == null){
+                    instance = new HomeScreenHandler();
+                }
+            }
+        }
+        return instance;
     }
 
     @Override

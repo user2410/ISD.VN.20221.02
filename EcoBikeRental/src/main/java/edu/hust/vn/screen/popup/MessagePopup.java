@@ -1,5 +1,6 @@
 package edu.hust.vn.screen.popup;
 
+import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -21,19 +22,37 @@ public class MessagePopup extends Popup {
     @FXML
     private Button okBtn;
 
-    private String message;
+    private static MessagePopup instance;
 
-    public MessagePopup(String msg, boolean isErr) throws IOException {
+    private Image errorIconImage;
+    private Image infoIconImage;
+
+    private MessagePopup() throws IOException {
         super(Configs.POPUP_MSG_SCREEN_PATH);
-        this.message = msg;
         okBtn.setOnMouseClicked(e -> {
             stage.close();
         });
-        this.msg.setText(msg);
-        File file = new File(Configs.IMAGE_PATH+"/icons/"+(isErr ? "error.png" : "info.png"));
-        Image image = new Image(file.toURI().toString());
-        iconImg.setImage(image);
+
+        File file = new File(Configs.IMAGE_PATH+"/icons/"+ "error.png");
+        errorIconImage = new Image(file.toURI().toString());
+        file = new File(Configs.IMAGE_PATH+"/icons/"+ "info.png");
+        infoIconImage = new Image(file.toURI().toString());
     }
 
+    public static MessagePopup getInstance() throws IOException {
+        if(instance == null){
+            synchronized (MessagePopup.class){
+                if(instance == null){
+                    instance = new MessagePopup();
+                }
+            }
+        }
+        return instance;
+    }
 
+    public void show(String msg, boolean isErr){
+        this.msg.setText(msg);
+        iconImg.setImage(isErr ? errorIconImage : infoIconImage);
+        super.show();
+    }
 }
