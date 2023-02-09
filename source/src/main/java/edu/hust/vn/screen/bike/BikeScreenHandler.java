@@ -1,6 +1,7 @@
 package edu.hust.vn.screen.bike;
 
 import edu.hust.vn.DataStore;
+import edu.hust.vn.controller.RentBikeController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.StandardEBike;
 import edu.hust.vn.model.bike.TwinBike;
@@ -168,14 +169,13 @@ public class BikeScreenHandler extends BaseScreenHandler {
         @Override
         public void handle(Event event) {
             try{
-//                RentBikeController rentBikeController = new RentBikeController();
-                System.out.println("rent bike");
-                
-                Rental rental = Rental.getInstance();
-                rental.setBike(bike);
-                rental.setDock(bike.getLock().getDock());
+                RentBikeController rentBikeController = new RentBikeController();
+                rentBikeController.setSelectedBike(bike);
+                rentBikeController.setCurrentDock(bike.getLock().getDock());
 
                 PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
+                paymentFormHandler.setPrevScreenHandler(getInstance(bike));
+                paymentFormHandler.setBaseController(rentBikeController);
                 paymentFormHandler.show();
             }catch (IOException e){
                 e.printStackTrace();

@@ -8,7 +8,7 @@ import edu.hust.vn.model.dock.Lock;
 import java.util.UUID;
 
 public class ViewDockController extends BaseController{
-    public Lock validateBarCode(Dock dock, String barCode) throws InvalidBarcodeException {
+    public Lock validateBarCode(Dock dock, String barCode) throws InvalidBarcodeException, IllegalArgumentException {
         if(!UUID.fromString(barCode).toString().equals(barCode)){
             throw new InvalidBarcodeException();
         }

@@ -143,7 +143,7 @@ public class DockScreenHandler extends BaseScreenHandler {
                 Lock lock = ctl.validateBarCode(this.dock, barCode);
                 Bike bike = lock.getBike();
                 BikeScreenHandler.getInstance(bike).show();
-            } catch (InvalidBarcodeException e) {
+            } catch (InvalidBarcodeException | IllegalArgumentException e) {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
             } catch (BarCodeNotFoundException e){
                 MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
