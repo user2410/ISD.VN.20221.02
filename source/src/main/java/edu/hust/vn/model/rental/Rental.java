@@ -4,6 +4,7 @@ import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.payment.PaymentTransaction;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
 
 import java.time.LocalDateTime;
 
@@ -12,17 +13,14 @@ public class Rental {
 
     private int id;
     private Dock dock;
-    private Bike bike;
-    private LongProperty startTime;
-    private LongProperty lastActiveTime;
+    private ObjectProperty<Bike> bike;
+    private ObjectProperty<LocalDateTime> startTime;
+    private ObjectProperty<LocalDateTime> endTime;
+    private ObjectProperty<LocalDateTime> lastActiveTime;
     private BooleanProperty active;
 
     private Rental(){
-        dock = null;
-        bike = null;
-        startTime = new SimpleLongProperty(0);
-        lastActiveTime = new SimpleLongProperty(0);
-        active = new SimpleBooleanProperty(false);
+        clear();
     }
 
     public static Rental getInstance(){
@@ -50,12 +48,52 @@ public class Rental {
         this.dock = dock;
     }
 
-    public Bike getBike() {
+    public ObjectProperty<Bike> bikeProperty() {
         return bike;
     }
 
+    public Bike getBike() {
+        return bike.get();
+    }
+
     public void setBike(Bike bike) {
-        this.bike = bike;
+        this.bike.set(bike);
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime.get();
+    }
+
+    public ObjectProperty<LocalDateTime> startTimeProperty() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime.set(startTime);
+    }
+
+    public LocalDateTime getEndTime() {
+        return endTime.get();
+    }
+
+    public ObjectProperty<LocalDateTime> endTimeProperty() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime.set(endTime);
+    }
+
+    public LocalDateTime getLastActiveTime() {
+        return lastActiveTime.get();
+    }
+
+    public ObjectProperty<LocalDateTime> lastActiveTimeProperty() {
+        return lastActiveTime;
+    }
+
+    public void setLastActiveTime(LocalDateTime lastActiveTime) {
+        this.lastActiveTime.set(lastActiveTime);
     }
 
     public boolean isActive() {
@@ -68,5 +106,14 @@ public class Rental {
 
     public void setActive(boolean active) {
         this.active.set(active);
+    }
+
+    public void clear(){
+        dock = null;
+        bike = new SimpleObjectProperty<>(null);
+        startTime = new SimpleObjectProperty<>(null);
+        endTime = new SimpleObjectProperty<>(null);
+        lastActiveTime = new SimpleObjectProperty<>(null);
+        active = new SimpleBooleanProperty(false);
     }
 }

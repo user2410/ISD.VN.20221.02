@@ -2,10 +2,13 @@ package edu.hust.vn.screen.home;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.controller.HomeController;
+import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
+import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -67,8 +70,9 @@ public class HomeScreenHandler extends BaseScreenHandler{
             }
         });
 
-        rentedBikeImg.visibleProperty().bind(Bindings.createBooleanBinding(() -> (DataStore.getInstance().rentedBike.get() != null), DataStore.getInstance().rentedBike));
-        rentedBikeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (DataStore.getInstance().rentedBike.get() != null), DataStore.getInstance().rentedBike));
+        ObjectProperty<Bike> rentedBike = Rental.getInstance().bikeProperty();
+        rentedBikeImg.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null), rentedBike));
+        rentedBikeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null), rentedBike));
 
         rentedBikeImg.setOnMouseClicked(e -> {
 

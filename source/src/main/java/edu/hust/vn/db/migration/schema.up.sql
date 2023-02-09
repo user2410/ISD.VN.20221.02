@@ -35,12 +35,11 @@ CREATE TABLE "Dock" (
 );
 
 CREATE TABLE "Lock" (
-  "id" bigserial,
+  "id" bigserial PRIMARY KEY,
   "barCode" varchar,
   "bikeId" bigint,
   "dockId" bigint NOT NULL,
-  "status" "LOCK_STATUS" NOT NULL DEFAULT 'RELEASED',
-  PRIMARY KEY ("id", "barCode")
+  "status" "LOCK_STATUS" NOT NULL DEFAULT 'RELEASED'
 );
 
 CREATE TABLE "Rental" (

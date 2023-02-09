@@ -23,21 +23,16 @@ public class DataStore {
     public DockDAO dockDAO;
     public BikeDAO bikeDAO;
 
-    public ObjectProperty<Bike> rentedBike;
-
     public ObservableList<Dock> dockList;
     public ObservableList<Bike> bikeList;
 
     private DataStore(){
-        rentedBike = null;
         try {
             dbConn = new EBRDB(Configs.DB_URL).getConn();
 
             dockDAO = new DockDAO(dbConn);
             lockDAO = new LockDAO(dbConn);
             bikeDAO = new BikeDAO(dbConn);
-
-            rentedBike = new SimpleObjectProperty<>(null);
 
         } catch (Exception e) {
             e.printStackTrace();

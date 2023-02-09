@@ -130,7 +130,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
             nRearSeats.setText(String.valueOf(((TwinBike)bike).getnRearSeats()));
         }
 
-        ObjectProperty<Bike> rentedBike = DataStore.getInstance().rentedBike;
+        ObjectProperty<Bike> rentedBike = Rental.getInstance().bikeProperty();
         rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
         timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
         actionBtn.textProperty().bind(Bindings.createStringBinding(() -> {
@@ -138,8 +138,8 @@ public class BikeScreenHandler extends BaseScreenHandler {
                 actionBtn.setStyle("-fx-background-color: red");
                 actionBtn.setStyle("-fx-text-fill: white");
                 actionBtn.setOnAction(null);
-                actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToRenturnBike);
-                return "Renturn this bike";
+                actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToReturnBike);
+                return "Return this bike";
             }
             actionBtn.setStyle("-fx-background-color: white");
             actionBtn.setStyle("-fx-text-fill: black");
@@ -184,10 +184,10 @@ public class BikeScreenHandler extends BaseScreenHandler {
         }
     };
 
-    private EventHandler requestToRenturnBike = new EventHandler() {
+    private EventHandler requestToReturnBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-            System.out.println("renturn bike");
+            System.out.println("return bike");
         }
     };
 }
