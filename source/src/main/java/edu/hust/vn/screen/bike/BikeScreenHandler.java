@@ -1,19 +1,34 @@
 package edu.hust.vn.screen.bike;
 
 import edu.hust.vn.DataStore;
+import edu.hust.vn.controller.RentBikeController;
+import edu.hust.vn.controller.ReturnController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.StandardEBike;
 import edu.hust.vn.model.bike.TwinBike;
+import edu.hust.vn.model.dock.Dock;
+import edu.hust.vn.model.dock.DockDAO;
+import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.dock.DockScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.payment.PaymentFormHandler;
+import edu.hust.vn.screen.popup.MessagePopup;
+import edu.hust.vn.screen.popup.Popup;
+import edu.hust.vn.screen.return_bike.ReturnScreenHandler;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -23,9 +38,15 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.temporal.ChronoUnit;
 
 public class BikeScreenHandler extends BaseScreenHandler {
 
@@ -70,7 +91,8 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
     @FXML
     private Label rentTimeBtn;
-
+    @FXML
+    private Label rentTime;
     @FXML
     private Label nPedals;
 
@@ -85,7 +107,10 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
     @FXML
     private Button actionBtn;
+    @FXML
+    private Label fee;
 
+    private int timeCounter;
     private static ObservableMap<Bike, BikeScreenHandler> bikeScreens = FXCollections.observableHashMap();
 
     private Bike bike;
@@ -98,8 +123,11 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
         ebrImage.setOnMouseClicked(e->{
             try {
+                getBaseController().updateData();
                 HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
@@ -131,23 +159,29 @@ public class BikeScreenHandler extends BaseScreenHandler {
         }
 
         ObjectProperty<Bike> rentedBike = Rental.getInstance().bikeProperty();
-        rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
-        timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
+        rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null && rentedBike.get().equals(this.bike)), rentedBike));
+        timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null && rentedBike.get().equals(this.bike)), rentedBike));
         actionBtn.textProperty().bind(Bindings.createStringBinding(() -> {
-            if(rentedBike.get() == this.bike){
+            if(rentedBike.get() != null && rentedBike.get().equals(this.bike)){
                 actionBtn.setStyle("-fx-background-color: red");
                 actionBtn.setStyle("-fx-text-fill: white");
                 actionBtn.setOnAction(null);
+                actionBtn.removeEventHandler(MouseEvent.MOUSE_CLICKED, requestToRentBike);
                 actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToReturnBike);
                 return "Return this bike";
+            }else {
+                actionBtn.setStyle("-fx-background-color: white");
+                actionBtn.setStyle("-fx-text-fill: black");
+                actionBtn.setOnAction(null);
+                actionBtn.removeEventHandler(MouseEvent.MOUSE_CLICKED, requestToReturnBike);
+                actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToRentBike);
+                actionBtn.setDisable(rentedBike.get() != null);
+                return "Rent this bike";
             }
-            actionBtn.setStyle("-fx-background-color: white");
-            actionBtn.setStyle("-fx-text-fill: black");
-            actionBtn.setOnAction(null);
-            actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToRentBike);
-            actionBtn.setDisable(rentedBike.get() != null);
-            return "Rent this bike";
         }, rentedBike));
+
+        timeCounter = 0;
+        setBaseController(new ReturnController());
     }
 
     public static BikeScreenHandler getInstance(Bike bike) throws IOException {
@@ -167,27 +201,102 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private EventHandler requestToRentBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-            try{
-//                RentBikeController rentBikeController = new RentBikeController();
-                System.out.println("rent bike");
-                
-                Rental rental = Rental.getInstance();
-                rental.setBike(bike);
-                rental.setDock(bike.getLock().getDock());
+            setBaseController(new RentBikeController());
 
-                PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
-                paymentFormHandler.show();
-            }catch (IOException e){
-                e.printStackTrace();
+            Rental rental = Rental.getInstance();
+            rental.setBike(bike);
+            rental.setDock(bike.getLock().getDock());
+            rental.setStartTime(LocalDateTime.now());
+
+            Lock lock = bike.getLock();
+
+//            lock.setBike(null);
+//            bike.setLock(null);
+
+            try {
+                DataStore.getInstance().putBike(lock.getId());
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
             }
 
+            timeLine = new Timeline();
+            fee.setText("0");
+            rentTime.setText("0:0:0:0");
+            stopBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToStop);
+
+            doTime();
         }
     };
 
     private EventHandler requestToReturnBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-            System.out.println("return bike");
+
+            if ( timeLine.getStatus() == Animation.Status.STOPPED ){
+                try {
+                    MessagePopup.getInstance().show("Is stopped, run to return bike", false);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                try{
+//                timeLine.stop();
+                    ReturnScreenHandler.getInstance().show();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    };
+
+    private Timeline timeLine;
+
+    public Timeline getTimeLine() {
+        return timeLine;
+    }
+
+    public void setTimeLine(Timeline timeLine) {
+        this.timeLine = timeLine;
+    }
+
+    private void doTime(){
+        timeLine.setCycleCount(Timeline.INDEFINITE);
+        KeyFrame frame = new KeyFrame(Duration.seconds(1), new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                RentBikeController rentBikeController = (RentBikeController) getBaseController();
+
+//                LocalDateTime to = LocalDateTime.now();
+//                LocalDateTime fromTemp = LocalDateTime.from(Rental.getInstance().getStartTime());
+                timeCounter++;
+                int days = timeCounter / 86400;
+                int hours = timeCounter % 86400 / 3600;
+                int minutes = timeCounter % 86400 % 3600 / 60;
+                int second = timeCounter % 86400 % 3600 % 60;
+                rentTime.setText(days + ":" + hours + ":" + minutes + ":" + second);
+                fee.setText(String.valueOf( rentBikeController.getPricing().getPricing( timeCounter ) ) );
+            }
+        });
+        timeLine.getKeyFrames().add(frame);
+        timeLine.playFromStart();
+    }
+
+    private EventHandler requestToStop = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+
+            if ( timeLine.getStatus() == Animation.Status.STOPPED ){
+                File file = new File(Configs.IMAGE_PATH + "/icons/"+"pause_circle_icon"+".png");
+                Image img = new Image(file.toURI().toString());
+                stopBtn.setImage(img);
+                timeLine.play();
+            }else{
+                File file = new File(Configs.IMAGE_PATH + "/icons/"+"run"+".png");
+                Image img = new Image(file.toURI().toString());
+                stopBtn.setImage(img);
+                timeLine.stop();
+            }
         }
     };
 }

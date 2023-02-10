@@ -76,4 +76,11 @@ public class DataStore {
         }
         return null;
     }
+
+    public int putBike(int lockId) throws SQLException {
+        return lockDAO.putBike(lockId);
+    }
+    public int addBike(int lockId, int bikeId) throws SQLException {
+        return lockDAO.addBike(lockId, bikeId);
+    }
 }

@@ -12,7 +12,9 @@ import javafx.stage.StageStyle;
 
 public class Main extends Application {
     public static void main(String[] args) {
+//        Seed.genAll();
         launch(args);
+
     }
 
     @Override

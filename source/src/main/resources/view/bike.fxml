@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
@@ -14,7 +21,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.0" prefWidth="907.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="639.0" prefWidth="907.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
@@ -172,6 +179,7 @@
                                  </font>
                               </Label>
                               <Label fx:id="rentalFee" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                              <Label fx:id="fee" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                            </children>
                            <VBox.margin>
                               <Insets left="20.0" />
@@ -190,6 +198,11 @@
                            </cursor>
                         </ImageView>
                         <Label fx:id="rentTimeBtn" text="Time">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="rentTime" text="Time">
                            <font>
                               <Font size="20.0" />
                            </font>

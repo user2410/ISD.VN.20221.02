@@ -1,7 +1,11 @@
 package edu.hust.vn.model.dock;
 
 import edu.hust.vn.model.bike.Bike;
+import edu.hust.vn.screen.return_bike.ReturnDockHandler;
 import javafx.beans.property.*;
+import javafx.scene.control.Button;
+
+import java.io.IOException;
 
 public class Lock {
     private int id;
@@ -13,8 +17,28 @@ public class Lock {
         RELEASED, LOCKED
     }
     private LOCK_STATE state;
+    protected ObjectProperty<Button> selectLock = new SimpleObjectProperty<>();
+    public Lock(){ }
 
-    public Lock(){}
+    public Button getSelectLock() {
+        return selectLock.get();
+    }
+
+    public ObjectProperty<Button> selectLockProperty() {
+        this.selectLock.set(new Button("Select"));
+        this.selectLock.get().setOnMouseClicked( e->{
+            try {
+                ReturnDockHandler.getInstance(dock).selectLock(barCode.get());
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        return selectLock;
+    }
+
+    public void setSelectLock(Button selectLock) {
+        this.selectLock.set(selectLock);
+    }
 
     public int getId() {
         return id;
@@ -61,12 +85,14 @@ public class Lock {
     }
 
     public void setBike(Bike bike) {
-        this.bike.set(bike);
+
         if(bike == null){
             this.state = LOCK_STATE.RELEASED;
         }else{
             this.state = LOCK_STATE.LOCKED;
         }
+        // khong no chay vao property ben dockcardhander truoc hien thi sai
+        this.bike.set(bike);
     }
 
     public LOCK_STATE getState() {
@@ -81,6 +107,10 @@ public class Lock {
             }
         }
         return false;
+    }
+
+    public void setState(LOCK_STATE state) {
+        this.state = state;
     }
 
     @Override

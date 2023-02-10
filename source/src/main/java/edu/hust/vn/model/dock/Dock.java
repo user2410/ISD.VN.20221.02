@@ -108,6 +108,12 @@ public class Dock {
             if(currentLock != null){
                 currentLock.setDockId(lock.getDockId());
                 currentLock.setBike(lock.getBike());
+                System.out.println(currentLock.toString());
+                if(lock.getBike() != null) {
+                    System.out.println(lock.getBike().toString());
+                }else{
+                    System.out.println(lock.getBike());
+                }
             }else{
                 this.locks.add(lock);
                 lock.setDock(this);

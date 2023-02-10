@@ -1,8 +1,10 @@
-package edu.hust.vn.screen.home;
+package edu.hust.vn.screen.return_bike;
 
 import edu.hust.vn.model.dock.Dock;
+import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.FXMLScreenHandler;
-import edu.hust.vn.screen.dock.DockScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenHandler;
+import edu.hust.vn.screen.payment.PaymentFormHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -14,7 +16,7 @@ import javafx.scene.control.Label;
 
 import java.io.IOException;
 
-public class DockCardHandler extends FXMLScreenHandler {
+public class ReturnDockCardHandler extends FXMLScreenHandler {
 
     @FXML
     private Label dockName;
@@ -37,31 +39,31 @@ public class DockCardHandler extends FXMLScreenHandler {
     @FXML
     private Button selectDockBtn;
 
-    private static ObservableMap<Dock, DockCardHandler> dockCards = FXCollections.observableHashMap();
+    private static ObservableMap<Dock, ReturnDockCardHandler> dockCards = FXCollections.observableHashMap();
     private Dock dock;
 
     public BooleanProperty show = new SimpleBooleanProperty();
 
-    private DockCardHandler(Dock dock) throws IOException {
+    private ReturnDockCardHandler(Dock dock) throws IOException {
         super(Configs.DOCK_CARD_PATH);
         this.dock = dock;
         show.set(true);
         setDockInfo();
+        selectDockBtn.setText("Select");
         selectDockBtn.setOnMouseClicked(e -> {
             try {
-                DockScreenHandler dockScreen = DockScreenHandler.getInstance(this.dock);
-                dockScreen.show();
+                ReturnDockHandler.getInstance(this.dock).show();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
         });
     }
 
-    public static DockCardHandler getInstance(Dock dock) throws IOException {
+    public static ReturnDockCardHandler getInstance(Dock dock) throws IOException {
         if(!dockCards.containsKey(dock)){
-            synchronized (DockCardHandler.class){
+            synchronized (ReturnDockCardHandler.class){
                 if(!dockCards.containsKey(dock)){
-                    dockCards.put(dock, new DockCardHandler(dock));
+                    dockCards.put(dock, new ReturnDockCardHandler(dock));
                 }
             }
         }
@@ -77,11 +79,6 @@ public class DockCardHandler extends FXMLScreenHandler {
         dockAvailableBikes.setText(String.valueOf(dock.getAvailableBikes()));
         dock.getLocks().forEach(lock -> {
             lock.bikeProperty().addListener((observable -> {
-//                System.out.println(dock.getName() + " dock card");
-//                if ( lock.getBike() != null ){
-//                    System.out.println(lock.getBike().toString());
-//                }
-//                System.out.println(lock.toString());
                 dockAvailableLots.setText(String.valueOf(dock.getAvailableLots()));
                 dockAvailableBikes.setText(String.valueOf(dock.getAvailableBikes()));
             }));

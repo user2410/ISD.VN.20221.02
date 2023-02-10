@@ -55,6 +55,7 @@ public class DockDAO extends DAO {
     }
 
     public void updateDockList() throws SQLException {
+        System.out.println("update");
         ObservableList<Dock> dockList = DataStore.getInstance().dockList;
         Dock dock = new Dock();
         try(PreparedStatement statement = conn.prepareStatement("SELECT * FROM \"Dock\"")){

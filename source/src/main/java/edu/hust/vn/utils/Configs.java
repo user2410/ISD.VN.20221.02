@@ -2,7 +2,7 @@ package edu.hust.vn.utils;
 
 public class Configs {
 
-    public static final String DB_URL = "jdbc:postgresql://localhost/root?user=root&password=mysecret";
+    public static final String DB_URL = "jdbc:postgresql://localhost/root?user=postgres&password=10026060";
 
     public static final String CURRENCY = "vnd";
 
@@ -17,5 +17,7 @@ public class Configs {
     public static final String PAYMENT_FORM_PATH = "/view/payment_form.fxml";
 
     public static final String POPUP_MSG_SCREEN_PATH = "/view/message_popup.fxml";
+
+    public static final String  RETURN_DOCK_SCREEN_PATH = "/view/return_dock.fxml";
 
 }

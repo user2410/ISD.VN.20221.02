@@ -13,16 +13,21 @@ import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
+import edu.hust.vn.screen.return_bike.ReturnDockCardHandler;
 import edu.hust.vn.utils.Configs;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
+import javafx.scene.SubScene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class DockScreenHandler extends BaseScreenHandler {
 
@@ -69,9 +74,12 @@ public class DockScreenHandler extends BaseScreenHandler {
         this.dock = dock;
         ebrImage.setOnMouseClicked(e -> {
             try {
+                getBaseController().updateData();
                 HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
                 ex.printStackTrace();
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         });
         dockTitle.textProperty().bind(dock.nameProperty());
@@ -83,9 +91,29 @@ public class DockScreenHandler extends BaseScreenHandler {
 
         ObservableList<Lock> locks = dock.getLocks();
         for(Lock lock : locks){
+
+            lock.bikeProperty().addListener((observable, oldValue, newValue) -> {
+
+                if (newValue == null || oldValue != null){
+                    Bike bikeOld = oldValue;
+                    for( DockBike dockBike : standardBikeTbl.getItems() ){
+                        if ( bikeOld.getId() == dockBike.bike.getId() ) standardBikeTbl.getItems().remove(dockBike);
+                    }
+                    for( DockEBike dockEBike : standardEBikeTbl.getItems() ){
+                        if ( bikeOld.getId() == dockEBike.bike.getId() ) standardEBikeTbl.getItems().remove(dockEBike);
+                    }
+                    for( DockBike dockTBike : standardTBikeTbl.getItems() ){
+                        if ( bikeOld.getId() == dockTBike.bike.getId() ) standardTBikeTbl.getItems().remove(dockTBike);
+                    }
+                }
+
+            });
+
             if(lock.getState() == Lock.LOCK_STATE.RELEASED){
                 continue;
             }
+
+
             Bike bike = lock.getBike();
             if(bike instanceof StandardBike){
                 standardBikeTbl.getItems().add(new DockBike(this, bike, lock));
