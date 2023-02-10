@@ -2,9 +2,10 @@ package edu.hust.vn.model.rental;
 
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
-import edu.hust.vn.model.payment.PaymentTransaction;
-import javafx.beans.property.*;
-import javafx.collections.FXCollections;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 
 import java.time.LocalDateTime;
 
@@ -13,11 +14,11 @@ public class Rental {
 
     private int id;
     private Dock dock;
-    private ObjectProperty<Bike> bike;
-    private ObjectProperty<LocalDateTime> startTime;
-    private ObjectProperty<LocalDateTime> endTime;
-    private ObjectProperty<LocalDateTime> lastActiveTime;
-    private BooleanProperty active;
+    private ObjectProperty<Bike> bike = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDateTime> startTime = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDateTime> endTime = new SimpleObjectProperty<>();
+    private ObjectProperty<LocalDateTime> lastActiveTime = new SimpleObjectProperty<>();
+    private BooleanProperty active = new SimpleBooleanProperty();
 
     private Rental(){
         clear();
@@ -110,10 +111,10 @@ public class Rental {
 
     public void clear(){
         dock = null;
-        bike = new SimpleObjectProperty<>(null);
-        startTime = new SimpleObjectProperty<>(null);
-        endTime = new SimpleObjectProperty<>(null);
-        lastActiveTime = new SimpleObjectProperty<>(null);
-        active = new SimpleBooleanProperty(false);
+        bike.set(null);
+        startTime.set(null);
+        endTime.set(null);
+        lastActiveTime.set(null);
+        active.set(false);
     }
 }
