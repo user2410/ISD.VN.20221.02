@@ -2,7 +2,9 @@ package edu.hust.vn.screen.payment;
 
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
 import edu.hust.vn.controller.PaymentInfoReceiverController;
+import edu.hust.vn.controller.RentBikeController;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.invoice.RentalInvoiceScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
 import javafx.fxml.FXML;
@@ -49,8 +51,10 @@ public class PaymentFormHandler extends BaseScreenHandler {
 
             try{
                 ctl.validatePaymentInfo();
-                ctl.submitPaymentInfo();
-            }catch ( InvalidPaymentInfoException ex){
+                RentalInvoiceScreenHandler rentalInvoiceScreen = new RentalInvoiceScreenHandler((RentBikeController) ctl);
+                rentalInvoiceScreen.setPrevScreenHandler(this);
+                rentalInvoiceScreen.show();
+            }catch ( InvalidPaymentInfoException | IOException ex){
                 try {
                     MessagePopup.getInstance().show(ex.getMessage(), true);
                 } catch (IOException exc) {

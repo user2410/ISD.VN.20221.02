@@ -6,13 +6,6 @@ public class CreditCard {
     private String cvvCode;
     private String expDate;
 
-    public CreditCard(String cardCode, String owner, String cvvCode, String expDate) {
-        this.cardCode = cardCode;
-        this.owner = owner;
-        this.cvvCode = cvvCode;
-        this.expDate = expDate;
-    }
-
     public String getCardCode() {
         return cardCode;
     }

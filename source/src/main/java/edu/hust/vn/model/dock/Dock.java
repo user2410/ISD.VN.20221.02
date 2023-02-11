@@ -141,4 +141,8 @@ public class Dock {
     public String toString(){
         return "Dock: " + this.name;
     }
+
+    public int getLockCount(){
+        return locks.size();
+    }
 }

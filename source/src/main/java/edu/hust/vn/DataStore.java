@@ -6,14 +6,19 @@ import edu.hust.vn.model.bike.BikeDAO;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.DockDAO;
 import edu.hust.vn.model.dock.LockDAO;
+import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.image.Image;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DataStore {
     private static DataStore instance;
@@ -25,6 +30,9 @@ public class DataStore {
 
     public ObservableList<Dock> dockList;
     public ObservableList<Bike> bikeList;
+    public Rental currentRental;
+
+    public Map<String, Image> bikeImages;
 
     private DataStore(){
         try {
@@ -34,6 +42,7 @@ public class DataStore {
             lockDAO = new LockDAO(dbConn);
             bikeDAO = new BikeDAO(dbConn);
 
+            currentRental = new Rental();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);
@@ -56,6 +65,15 @@ public class DataStore {
         try {
             bikeList = FXCollections.observableArrayList(bikeDAO.findAll());
             dockList = FXCollections.observableArrayList(dockDAO.findAll());
+
+            bikeImages = new HashMap<>(3);
+            File file = new File(Configs.IMAGE_PATH + "/bike/STANDARD_BIKE.png");
+            bikeImages.put("STANDARD_BIKE", new Image(file.toURI().toString()));
+            file = new File(Configs.IMAGE_PATH + "/bike/STANDARD_EBIKE.png");
+            bikeImages.put("STANDARD_EBIKE", new Image(file.toURI().toString()));
+            file = new File(Configs.IMAGE_PATH + "/bike/TWIN_BIKE.png");
+            bikeImages.put("TWIN_BIKE", new Image(file.toURI().toString()));
+
         } catch (SQLException e) {
             System.err.println("Load singleton data failed");
             e.printStackTrace();
@@ -63,11 +81,11 @@ public class DataStore {
         }
     }
 
-    public Bike getBikeById(int id) {
+    public Bike getBikeById(int id) throws SQLException {
         for(Bike b : bikeList){
             if(b.getId() == id) return b;
         }
-        return null;
+        return bikeDAO.findByID(id);
     }
 
     public Dock getDockById(int id) {

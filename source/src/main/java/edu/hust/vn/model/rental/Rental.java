@@ -1,36 +1,22 @@
 package edu.hust.vn.model.rental;
 
 import edu.hust.vn.model.bike.Bike;
-import edu.hust.vn.model.dock.Dock;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import edu.hust.vn.model.dock.Lock;
+import javafx.beans.property.*;
 
 import java.time.LocalDateTime;
 
 public class Rental {
-    private static Rental instance;
-
     private int id;
-    private Dock dock;
+    private Lock lock;
     private ObjectProperty<Bike> bike = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDateTime> startTime = new SimpleObjectProperty<>();
     private ObjectProperty<LocalDateTime> endTime = new SimpleObjectProperty<>();
-    private ObjectProperty<LocalDateTime> lastActiveTime = new SimpleObjectProperty<>();
+    private LongProperty totalTime = new SimpleLongProperty();
     private BooleanProperty active = new SimpleBooleanProperty();
 
-    private Rental(){
+    public Rental(){
         clear();
-    }
-
-    public static Rental getInstance(){
-        if(instance == null){
-            synchronized (Rental.class){
-                instance = new Rental();
-            }
-        }
-        return instance;
     }
 
     public int getId() {
@@ -41,12 +27,12 @@ public class Rental {
         this.id = id;
     }
 
-    public Dock getDock() {
-        return dock;
+    public Lock getLock() {
+        return lock;
     }
 
-    public void setDock(Dock dock) {
-        this.dock = dock;
+    public void setLock(Lock lock) {
+        this.lock = lock;
     }
 
     public ObjectProperty<Bike> bikeProperty() {
@@ -85,16 +71,16 @@ public class Rental {
         this.endTime.set(endTime);
     }
 
-    public LocalDateTime getLastActiveTime() {
-        return lastActiveTime.get();
+    public long getTotalTime() {
+        return totalTime.get();
     }
 
-    public ObjectProperty<LocalDateTime> lastActiveTimeProperty() {
-        return lastActiveTime;
+    public LongProperty totalTimeProperty() {
+        return totalTime;
     }
 
-    public void setLastActiveTime(LocalDateTime lastActiveTime) {
-        this.lastActiveTime.set(lastActiveTime);
+    public void setTotalTime(long totalTime) {
+        this.totalTime.set(totalTime);
     }
 
     public boolean isActive() {
@@ -110,11 +96,19 @@ public class Rental {
     }
 
     public void clear(){
-        dock = null;
+        lock = null;
         bike.set(null);
         startTime.set(null);
         endTime.set(null);
-        lastActiveTime.set(null);
+        totalTime.set(0);
         active.set(false);
+    }
+
+    public void startRenting(Lock lock, Bike bike){
+        this.lock = lock;
+        this.bike.set(bike);
+        startTime.set(LocalDateTime.now());
+        totalTime.set(0);
+        active.set(true);
     }
 }

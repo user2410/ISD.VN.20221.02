@@ -1,13 +1,13 @@
-package edu.hust.vn.screen.home;
+package edu.hust.vn.screen.return_bike;
 
 import edu.hust.vn.DataStore;
-import edu.hust.vn.controller.HomeController;
+import edu.hust.vn.controller.ReturnController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
+import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
-import edu.hust.vn.screen.bike.BikeScreenHandler;
-import edu.hust.vn.screen.dock.DockScreenHandler;
 import edu.hust.vn.screen.dock_card.DockCardHandler;
+import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class HomeScreenHandler extends BaseScreenHandler{
+public class ReturnScreenHandler extends BaseScreenHandler {
 
     @FXML
     private ImageView ebrImage;
@@ -42,34 +42,29 @@ public class HomeScreenHandler extends BaseScreenHandler{
     @FXML
     private FlowPane docksView;
 
-    private static HomeScreenHandler instance;
+    @FXML
+    private Label titleLabel;
+
     private ObservableList<DockCardHandler> homeItems;
 
-    private HomeScreenHandler() throws IOException {
+    private ReturnScreenHandler() throws IOException {
         super(Configs.HOME_SCREEN_PATH);
+        titleLabel.setText("Return Bike");
 
         homeItems = FXCollections.observableArrayList();
-
-        HomeController homectl = new HomeController();
-        setBaseController(homectl);
 
         ObservableList<Dock> dockList = DataStore.getInstance().dockList;
 
         try{
             for(Dock dock : dockList){
-                DockCardHandler dockCardHandler = new DockCardHandler(dock, new EventHandler() {
+                DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler() {
                     @Override
                     public void handle(Event event) {
-                        try {
-                            DockScreenHandler dockScreen = DockScreenHandler.getInstance(dock);
-                            dockScreen.show();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        getBaseController();
                     }
                 });
-                this.homeItems.add(dockCardHandler);
-                docksView.getChildren().add(dockCardHandler.getContent());
+                this.homeItems.add(returnDockCardHandler);
+                docksView.getChildren().add(returnDockCardHandler.getContent());
             }
         }catch (IOException e){
             e.printStackTrace();
@@ -77,21 +72,12 @@ public class HomeScreenHandler extends BaseScreenHandler{
 
         ebrImage.setOnMouseClicked(e -> {
             try {
-                DataStore.getInstance().dockDAO.updateDockList();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
-
-        ObjectProperty<Bike> rentedBike = DataStore.getInstance().currentRental.bikeProperty();
-        rentedBikeImg.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null), rentedBike));
-        rentedBikeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null), rentedBike));
-
-        rentedBikeImg.setOnMouseClicked(e -> {
-            try {
-                BikeScreenHandler.getInstance(DataStore.getInstance().currentRental.getBike()).show();
+                getBaseController().updateData();
+                HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
-                ex.printStackTrace();
+                throw new RuntimeException(ex);
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         });
 
@@ -106,8 +92,7 @@ public class HomeScreenHandler extends BaseScreenHandler{
                 }
                 return;
             }
-            ArrayList<Dock> res = ((HomeController)this.getBaseController()).searchDockList(newValue);
-//            System.out.println(res);
+            ArrayList<Dock> res = ((ReturnController)this.getBaseController()).searchDockList(newValue);
             docksView.getChildren().clear();
             for(DockCardHandler dc : homeItems){
                 boolean inRes = false;
@@ -121,17 +106,6 @@ public class HomeScreenHandler extends BaseScreenHandler{
                 dc.setShow(inRes);
             }
         });
-    }
-
-    public static HomeScreenHandler getInstance() throws IOException {
-        if(instance == null){
-            synchronized (HomeScreenHandler.class){
-                if(instance == null){
-                    instance = new HomeScreenHandler();
-                }
-            }
-        }
-        return instance;
     }
 
     @Override

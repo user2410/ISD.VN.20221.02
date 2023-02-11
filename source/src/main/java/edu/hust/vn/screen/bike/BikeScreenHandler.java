@@ -11,6 +11,9 @@ import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.payment.PaymentFormHandler;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
@@ -24,9 +27,13 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class BikeScreenHandler extends BaseScreenHandler {
 
@@ -70,7 +77,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private ImageView stopBtn;
 
     @FXML
-    private Label rentTimeBtn;
+    private Label rentTime;
 
     @FXML
     private Label nPedals;
@@ -91,6 +98,31 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
     private Bike bike;
 
+    private static final Image pauseImage;
+    private static final Image resumeImage;
+    static {
+        File file = new File(Configs.IMAGE_PATH+"/icons/pause_circle_icon.png");
+        pauseImage = new Image(file.toURI().toString());
+        file = new File(Configs.IMAGE_PATH+"/icons/play_circle_icon.png");
+        resumeImage = new Image(file.toURI().toString());
+    }
+
+    private static Timeline timeline;
+    static{
+        timeline = new Timeline(
+            new KeyFrame(
+                Duration.seconds(1),
+                event -> {
+                    System.out.println("time event");
+                    Rental rental = DataStore.getInstance().currentRental;
+                    if(rental.getBike() == null || !rental.isActive()) return;
+                    rental.setTotalTime(rental.getTotalTime()+1);
+                })
+        );
+        timeline.setCycleCount( Animation.INDEFINITE );
+        timeline.play();
+    }
+
     private BikeScreenHandler(Bike bike) throws IOException {
         super(Configs.BIKE_SCREEN_PATH);
         this.bike = bike;
@@ -105,10 +137,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
             }
         });
 
-//        System.out.println(pathname);
-        File file = new File(Configs.IMAGE_PATH + "/bike/"+bike.typeAsString()+".png");
-        Image img = new Image(file.toURI().toString());
-        bikeImage.setImage(img);
+        bikeImage.setImage(DataStore.getInstance().bikeImages.get(bike.typeAsString()));
 
         licensePlate.textProperty().bind(bike.licensePlateProperty());
         type.setText(bike.typeAsString());
@@ -131,24 +160,37 @@ public class BikeScreenHandler extends BaseScreenHandler {
             nRearSeats.setText(String.valueOf(((TwinBike)bike).getnRearSeats()));
         }
 
-        ObjectProperty<Bike> rentedBike = Rental.getInstance().bikeProperty();
-        rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
-        timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBike.get() != null, rentedBike));
+        Rental currentRental = DataStore.getInstance().currentRental;
+        ObjectProperty<Bike> rentedBikeProp = currentRental.bikeProperty();
+
+        rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
+
+        rentTime.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
+        rentTime.textProperty().bind(Bindings.createStringBinding(()-> Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()), currentRental.totalTimeProperty()));
+
+        stopBtn.imageProperty().bind(Bindings.createObjectBinding(() -> (currentRental.isActive() ? pauseImage : resumeImage), currentRental.activeProperty()));
+        stopBtn.setOnMouseClicked(e->{
+            currentRental.setActive(!currentRental.isActive());
+        });
+
+        timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
         actionBtn.textProperty().bind(Bindings.createStringBinding(() -> {
-            if(rentedBike.get() == this.bike){
+            if(rentedBikeProp.get() == this.bike){
                 actionBtn.setStyle("-fx-background-color: red");
                 actionBtn.setStyle("-fx-text-fill: white");
                 actionBtn.setOnAction(null);
+                actionBtn.removeEventHandler(MouseEvent.MOUSE_CLICKED, requestToRentBike);
                 actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToReturnBike);
                 return "Return this bike";
             }
             actionBtn.setStyle("-fx-background-color: white");
             actionBtn.setStyle("-fx-text-fill: black");
             actionBtn.setOnAction(null);
+            actionBtn.removeEventHandler(MouseEvent.MOUSE_CLICKED, requestToReturnBike);
             actionBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToRentBike);
-            actionBtn.setDisable(rentedBike.get() != null);
+            actionBtn.setDisable(rentedBikeProp.get() != null);
             return "Rent this bike";
-        }, rentedBike));
+        }, rentedBikeProp));
     }
 
     public static BikeScreenHandler getInstance(Bike bike) throws IOException {
@@ -171,7 +213,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
             try{
                 RentBikeController rentBikeController = new RentBikeController();
                 rentBikeController.setSelectedBike(bike);
-                rentBikeController.setCurrentDock(bike.getLock().getDock());
+                rentBikeController.setCurrentLock(bike.getLock());
 
                 PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
                 paymentFormHandler.setPrevScreenHandler(getInstance(bike));
