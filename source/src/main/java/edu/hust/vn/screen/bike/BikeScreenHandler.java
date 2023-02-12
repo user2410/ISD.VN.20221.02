@@ -9,6 +9,8 @@ import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.payment.PaymentFormHandler;
+import edu.hust.vn.screen.popup.MessagePopup;
+import edu.hust.vn.screen.return_bike.ReturnScreenHandler;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
 import javafx.animation.Animation;
@@ -136,12 +138,14 @@ public class BikeScreenHandler extends BaseScreenHandler {
                 throw new RuntimeException(ex);
             }
         });
-
+        RentBikeController rentBikeController = new RentBikeController();
+        setBaseController(rentBikeController);
         bikeImage.setImage(DataStore.getInstance().bikeImages.get(bike.typeAsString()));
 
         licensePlate.textProperty().bind(bike.licensePlateProperty());
         type.setText(bike.typeAsString());
         price.textProperty().bind(Bindings.createStringBinding(() -> bike.priceProperty().get() +Configs.CURRENCY, bike.priceProperty()));
+
         deposit.textProperty().bind(Bindings.createStringBinding(() -> Utils.round(bike.priceProperty().get() * 0.4, 2) +Configs.CURRENCY, bike.priceProperty()));
         if(bike instanceof StandardEBike){
             StandardEBike ebike = (StandardEBike)bike;
@@ -163,9 +167,11 @@ public class BikeScreenHandler extends BaseScreenHandler {
         Rental currentRental = DataStore.getInstance().currentRental;
         ObjectProperty<Bike> rentedBikeProp = currentRental.bikeProperty();
 
-        rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
+        rentalFeeLabel.textProperty().bind(Bindings.createStringBinding(()-> String.valueOf(rentBikeController.getPricing().getPricing((int)currentRental.getTotalTime())), currentRental.totalTimeProperty()));
 
-        rentTime.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
+        rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> this.bike.equals(rentedBikeProp.get()) , rentedBikeProp));
+
+        rentTime.visibleProperty().bind(Bindings.createBooleanBinding(() -> this.bike.equals(rentedBikeProp.get()), rentedBikeProp));
         rentTime.textProperty().bind(Bindings.createStringBinding(()-> Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()), currentRental.totalTimeProperty()));
 
         stopBtn.imageProperty().bind(Bindings.createObjectBinding(() -> (currentRental.isActive() ? pauseImage : resumeImage), currentRental.activeProperty()));
@@ -173,7 +179,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
             currentRental.setActive(!currentRental.isActive());
         });
 
-        timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
+        timeCtl.visibleProperty().bind(Bindings.createBooleanBinding(() -> this.bike.equals(rentedBikeProp.get()), rentedBikeProp));
         actionBtn.textProperty().bind(Bindings.createStringBinding(() -> {
             if(rentedBikeProp.get() == this.bike){
                 actionBtn.setStyle("-fx-background-color: red");
@@ -210,18 +216,15 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private EventHandler requestToRentBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-            try{
-                RentBikeController rentBikeController = new RentBikeController();
-                rentBikeController.setSelectedBike(bike);
-                rentBikeController.setCurrentLock(bike.getLock());
+            RentBikeController rentBikeController = (RentBikeController) getBaseController();
+            rentBikeController.setSelectedBike(bike);
+            rentBikeController.setCurrentLock(bike.getLock());
 
-                PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
-                paymentFormHandler.setPrevScreenHandler(getInstance(bike));
-                paymentFormHandler.setBaseController(rentBikeController);
-                paymentFormHandler.show();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
+            Rental currentRental = DataStore.getInstance().currentRental;
+            currentRental.setBike(bike);
+            currentRental.startRenting(bike.getLock(), bike);
+
+            stopBtn.addEventHandler(MouseEvent.MOUSE_CLICKED, requestToStop);
 
         }
     };
@@ -229,7 +232,31 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private EventHandler requestToReturnBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-            System.out.println("return bike");
+            if ( timeline.getStatus() == Animation.Status.STOPPED ){
+                try {
+                    MessagePopup.getInstance().show("Is stopped, run to return bike", false);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                try{
+                    ReturnScreenHandler.getInstance().show();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    };
+
+    private EventHandler requestToStop = new EventHandler() {
+        @Override
+        public void handle(Event event) {
+            Rental currentRental = DataStore.getInstance().currentRental;
+            if ( currentRental.isActive() ){
+                currentRental.setActive(true);
+            }else{
+                currentRental.setActive(false);
+            }
         }
     };
 }

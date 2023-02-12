@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
@@ -11,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="634.0" prefWidth="860.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="634.0" prefWidth="860.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
@@ -31,6 +37,11 @@
          <children>
             <VBox layoutX="438.0" layoutY="89.0" prefHeight="288.0" prefWidth="408.0" spacing="5.0">
                <children>
+                  <RadioButton mnemonicParsing="false" selected="true" text="Credit card">
+                     <VBox.margin>
+                        <Insets bottom="50.0" />
+                     </VBox.margin>
+                  </RadioButton>
                   <Label text="Card number">
                      <font>
                         <Font name="System Bold" size="13.0" />
@@ -45,8 +56,6 @@
                   <TextField fx:id="cardCvv" />
                </children>
             </VBox>
-            <Label layoutX="49.0" layoutY="52.0" text="Payment method" />
-            <RadioButton layoutX="77.0" layoutY="89.0" mnemonicParsing="false" selected="true" text="Credit card" />
             <HBox alignment="CENTER" layoutX="-1.0" layoutY="360.0" prefHeight="100.0" prefWidth="860.0" spacing="40.0">
                <children>
                   <Button fx:id="cancelBtn" mnemonicParsing="false" prefHeight="43.0" text="Cancel" />
@@ -57,6 +66,28 @@
                   </Button>
                </children>
             </HBox>
+            <GridPane layoutX="14.0" layoutY="89.0" prefHeight="266.0" prefWidth="386.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label prefHeight="49.0" prefWidth="166.0" text="License plate" />
+                  <Label prefHeight="49.0" prefWidth="166.0" text="Bike type" GridPane.rowIndex="1" />
+                  <Label prefHeight="49.0" prefWidth="166.0" text="Rental fee" GridPane.rowIndex="2" />
+                  <Label prefHeight="49.0" prefWidth="166.0" text="Total time" GridPane.rowIndex="3" />
+                  <Label fx:id="bikeLicensePlate" prefHeight="49.0" prefWidth="166.0" text="label" GridPane.columnIndex="1" />
+                  <Label fx:id="totalTime" prefHeight="49.0" prefWidth="166.0" text="label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                  <Label fx:id="rentalFee" prefHeight="49.0" prefWidth="166.0" text="label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="bikeType" prefHeight="49.0" prefWidth="166.0" text="label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+               </children>
+            </GridPane>
          </children></AnchorPane>
    </children>
 </VBox>

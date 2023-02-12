@@ -41,7 +41,7 @@ public abstract class BaseScreenHandler extends FXMLScreenHandler{
         if(this.scene == null){
             this.scene = new Scene(this.content);
         }
-        onShow();
+         onShow();
         stage.setScene(this.scene);
         stage.show();
     }

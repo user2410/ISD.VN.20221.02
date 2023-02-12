@@ -3,7 +3,9 @@ package edu.hust.vn.screen.return_bike;
 import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.BarCodeNotFoundException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
-import edu.hust.vn.controller.ReturnDockController;
+import edu.hust.vn.controller.PaymentController;
+import edu.hust.vn.controller.ReturnController;
+import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
@@ -11,6 +13,7 @@ import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.dock.DockBike;
+import edu.hust.vn.screen.dock.DockScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.payment.PaymentFormHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
@@ -25,6 +28,7 @@ import javafx.scene.image.ImageView;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 public class ReturnDockHandler extends BaseScreenHandler {
 
@@ -50,7 +54,7 @@ public class ReturnDockHandler extends BaseScreenHandler {
     private Button barCodeSubmitBtn;
 
     @FXML
-    private TableView<Lock> barcodeTable;
+    private TableView<LockHandler> barcodeTable;
 
     private static ObservableMap<Dock, ReturnDockHandler> dockScreens = FXCollections.observableHashMap();
     private Dock dock;
@@ -60,17 +64,12 @@ public class ReturnDockHandler extends BaseScreenHandler {
 
         setScreenTitle("Dock Screen");
 
-        setBaseController(new ReturnDockController());
-
         this.dock = dock;
         ebrImage.setOnMouseClicked(e -> {
             try {
-                getBaseController().updateData();
                 HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
                 ex.printStackTrace();
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
             }
         });
 
@@ -78,15 +77,6 @@ public class ReturnDockHandler extends BaseScreenHandler {
         address.textProperty().bind(dock.addressProperty());
 
         initTable(barcodeTable);
-
-        ObservableList<Lock> locks = dock.getLocks();
-        for(Lock lock : locks){
-            if(lock.getState() == Lock.LOCK_STATE.LOCKED){
-                continue;
-            }
-//            lock.selectLockProperty();
-            barcodeTable.getItems().add(lock);
-        }
 
         barCodeSubmitBtn.setOnMouseClicked(e -> selectLock(barCodeInput.getText()));
     }
@@ -103,9 +93,9 @@ public class ReturnDockHandler extends BaseScreenHandler {
     }
 
     private void initTable(TableView tbl) {
-        TableColumn<Lock, String> barCode = new TableColumn<>("Bar Code");
+        TableColumn<LockHandler, String> barCode = new TableColumn<>("Bar Code");
         barCode.setCellValueFactory(new PropertyValueFactory<>("barCode"));
-        TableColumn<Lock, Button> returnBikeCol = new TableColumn<>("Return with barcode lock");
+        TableColumn<LockHandler, Button> returnBikeCol = new TableColumn<>("Return");
         returnBikeCol.setCellValueFactory(new PropertyValueFactory<>("selectLock"));
         tbl.getColumns().addAll(barCode, returnBikeCol);
 
@@ -115,20 +105,34 @@ public class ReturnDockHandler extends BaseScreenHandler {
     public void onShow() {
         availableLots.setText("Available lots: "+dock.getAvailableLots());
         availableBikes.setText("Available bikes: "+dock.getAvailableBikes());
+
+        ObservableList<LockHandler> list = barcodeTable.getItems();
+        list.clear();
+        for(Lock lock : dock.getLocks()){
+            if(lock.getState() == Lock.LOCK_STATE.LOCKED){
+                for(LockHandler lockHandler : list){
+                    if(lockHandler.getLock().getId() == dock.getId()){
+                        list.remove(lockHandler);
+                        break;
+                    }
+                }
+            }else{
+                list.add(new LockHandler(this, lock));
+            }
+        }
     }
 
     public void selectLock(String barCode){
-        ReturnDockController ctl = (ReturnDockController) getBaseController();
+        ReturnController ctl = (ReturnController) getBaseController();
         try{
             try{
 //                Lock lock = ctl.validateBarCode(this.dock, barCode);
-//                try {
-//                    DataStore.getInstance().addBike(lock.getId(), Rental.getInstance().getBike().getId());
-//                } catch (SQLException e) {
-//                    throw new RuntimeException(e);
-//                }
+                Rental currentRental =  DataStore.getInstance().currentRental;
+                currentRental.setEndTime(LocalDateTime.now());
+                currentRental.setActive(false);
+
                 PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
-//                BikeScreenHandler.getInstance(Rental.getInstance().getBike()).getTimeLine().stop();
+                paymentFormHandler.setPrevScreenHandler(BikeScreenHandler.getInstance(currentRental.getBike()));
                 paymentFormHandler.show();
             } catch (InvalidBarcodeException e) {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);

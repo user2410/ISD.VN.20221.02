@@ -6,6 +6,8 @@ import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenHandler;
+import edu.hust.vn.screen.dock.DockScreenHandler;
 import edu.hust.vn.screen.dock_card.DockCardHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.utils.Configs;
@@ -46,6 +48,7 @@ public class ReturnScreenHandler extends BaseScreenHandler {
     private Label titleLabel;
 
     private ObservableList<DockCardHandler> homeItems;
+    private static ReturnScreenHandler instance;
 
     private ReturnScreenHandler() throws IOException {
         super(Configs.HOME_SCREEN_PATH);
@@ -57,10 +60,18 @@ public class ReturnScreenHandler extends BaseScreenHandler {
 
         try{
             for(Dock dock : dockList){
-                DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler() {
+                DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler<>() {
                     @Override
                     public void handle(Event event) {
-                        getBaseController();
+
+                        try {
+                            Rental currentRental = DataStore.getInstance().currentRental;
+
+                            ReturnDockHandler.getInstance(dock).setBaseController(getBaseController());
+                            ReturnDockHandler.getInstance(dock).show();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
                 this.homeItems.add(returnDockCardHandler);
@@ -72,12 +83,17 @@ public class ReturnScreenHandler extends BaseScreenHandler {
 
         ebrImage.setOnMouseClicked(e -> {
             try {
-                getBaseController().updateData();
                 HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+            }
+        });
+
+        rentedBikeImg.setOnMouseClicked(e -> {
+            try {
+                BikeScreenHandler.getInstance(DataStore.getInstance().currentRental.getBike()).show();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
 
@@ -108,8 +124,21 @@ public class ReturnScreenHandler extends BaseScreenHandler {
         });
     }
 
+    public static ReturnScreenHandler getInstance() throws IOException {
+        if(instance == null){
+            synchronized (ReturnScreenHandler.class){
+                if(instance == null){
+                    instance = new ReturnScreenHandler();
+                }
+            }
+        }
+        return instance;
+    }
+
     @Override
     public void onShow() {
         docksView.requestFocus();
     }
+
+
 }
