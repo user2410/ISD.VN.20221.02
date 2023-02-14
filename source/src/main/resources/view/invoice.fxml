@@ -91,13 +91,13 @@
                         <Font name="System Bold" size="13.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="cardNumber" disable="true" editable="false" />
+                  <TextField fx:id="cardNumber" />
                   <Label text="Card holder name" />
-                  <TextField fx:id="cardOwner" disable="true" editable="false" />
+                  <TextField fx:id="cardOwner" />
                   <Label text="Expiration date" />
-                  <TextField fx:id="cardExpDate" disable="true" editable="false" />
+                  <TextField fx:id="cardExpDate" />
                   <Label text="Card security code" />
-                  <TextField fx:id="cardCvv" disable="true" editable="false" />
+                  <TextField fx:id="cardCvv" />
                </children>
                <HBox.margin>
                   <Insets />

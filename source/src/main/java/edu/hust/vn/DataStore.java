@@ -1,5 +1,9 @@
 package edu.hust.vn;
 
+import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
+import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
+import edu.hust.vn.controller.strategy.pricing.IPricing;
+import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.db.EBRDB;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.BikeDAO;
@@ -34,6 +38,9 @@ public class DataStore {
 
     public Map<String, Image> bikeImages;
 
+    public PaymentInfoValidationStrategy paymentInfoValidationStrategy;
+    public IPricing priceCalculatingStrategy;
+
     private DataStore(){
         try {
             dbConn = new EBRDB(Configs.DB_URL).getConn();
@@ -43,6 +50,9 @@ public class DataStore {
             bikeDAO = new BikeDAO(dbConn);
 
             currentRental = new Rental();
+
+            paymentInfoValidationStrategy = new CardValidationStrategy();
+            priceCalculatingStrategy = new Pricing();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

@@ -70,8 +70,16 @@ public class ReturnScreenHandler extends BaseScreenHandler {
                 DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler<>() {
                     @Override
                     public void handle(Event event) {
+                        if (searchInput.getText().equals("")){
+                            try {
+                                MessagePopup.getInstance().show("please enter bar code", false);
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        }else{
+                            selectLock(dock, searchInput.getText());
+                        }
 
-                        selectLock(dock, searchInput.getText());
                     }
                 });
                 this.homeItems.add(returnDockCardHandler);
@@ -103,7 +111,6 @@ public class ReturnScreenHandler extends BaseScreenHandler {
             synchronized (ReturnScreenHandler.class){
                 if(instance == null){
                     instance = new ReturnScreenHandler();
-                    instance.setBaseController(new ReturnController());
                 }
             }
         }
@@ -116,16 +123,17 @@ public class ReturnScreenHandler extends BaseScreenHandler {
     }
 
     public void selectLock(Dock dock, String barCode){
-        ViewDockController ctl = new ViewDockController();
+        ReturnController returnController = (ReturnController) getBaseController();
         try{
             try{
-                Lock lock = ctl.validateBarCode(dock, barCode);
+                Lock lock = returnController.validateBarCode(dock, barCode);
                 Rental currentRental =  DataStore.getInstance().currentRental;
                 currentRental.setEndTime(LocalDateTime.now());
-                currentRental.setActive(false);
+//                currentRental.setActive(false);
 
                 currentRental.getBike().setLock(lock);
                 ReturnFormHandler returnFormHandler = new ReturnFormHandler();
+                returnFormHandler.setBaseController(getBaseController());
                 returnFormHandler.show();
             } catch (InvalidBarcodeException e) {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);

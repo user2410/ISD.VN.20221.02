@@ -33,9 +33,6 @@ public class ReturnFormHandler extends BaseScreenHandler {
     private TextField cardOwner;
 
     @FXML
-    private TextField expDate;
-
-    @FXML
     private TextField cardCvv;
 
     @FXML
@@ -70,22 +67,27 @@ public class ReturnFormHandler extends BaseScreenHandler {
         bikeType.setText(currentRental.getBike().typeAsString());
         IPricing pricing = new Pricing();
         bikeRentalFee.setText(String.valueOf(pricing.getPricing( (int) currentRental.getTotalTime() )));
+
         bikeTotalTime.setText(Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()));
 
-        confirmBtn.setOnMouseClicked(e->{
-//            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
-//            ctl.setPaymentInfo("cardOwner", cardOwner.getText());
-//            ctl.setPaymentInfo("cardNumber", cardNumber.getText());
-//            ctl.setPaymentInfo("expDate", expDate.getText());
-//            ctl.setPaymentInfo("cvvCode", cardCvv.getText());
-//            ctl.validatePaymentInfo();
+        confirmBtn.setOnMouseClicked( e->{
+            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
+            ctl.setPaymentInfo("cardOwner", cardOwner.getText());
+            ctl.setPaymentInfo("cardNumber", cardNumber.getText());
+            ctl.setPaymentInfo("expDate", cardExpDate.getText());
+            ctl.setPaymentInfo("cvvCode", cardCvv.getText());
 
             try {
+                ctl.validatePaymentInfo();
                 DataStore.getInstance().currentRental.clear();
                 HomeScreenHandler.getInstance().show();
                 MessagePopup.getInstance().show("Return success", false);
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+            } catch (InvalidPaymentInfoException | IOException ex) {
+                try {
+                    MessagePopup.getInstance().show(ex.getMessage(), true);
+                } catch (IOException exc) {
+                    throw new RuntimeException(exc);
+                }
             }
         });
     }
