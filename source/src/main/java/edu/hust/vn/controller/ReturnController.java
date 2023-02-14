@@ -16,22 +16,9 @@ import java.util.UUID;
 
 public class ReturnController extends BaseController {
 
-    private IPricing priceCalculatingStrategy;
     private Bike returnedBike;
     private Dock returnedToDock;
     private Lock returnedToLock;
-
-    public ReturnController(){
-        priceCalculatingStrategy = new Pricing();
-    }
-
-    public IPricing getPriceCalculatingStrategy() {
-        return priceCalculatingStrategy;
-    }
-
-    public void setPriceCalculatingStrategy(IPricing priceCalculatingStrategy) {
-        this.priceCalculatingStrategy = priceCalculatingStrategy;
-    }
 
     public Bike getReturnedBike() {
         return returnedBike;

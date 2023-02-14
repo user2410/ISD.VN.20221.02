@@ -2,10 +2,6 @@ package edu.hust.vn.controller;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
-import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
-import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
-import edu.hust.vn.controller.strategy.pricing.IPricing;
-import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.invoice.Invoice;
@@ -17,12 +13,10 @@ import java.util.Map;
 public class RentBikeController extends BaseController implements PaymentInfoReceiverController{
     private Bike selectedBike;
     private Lock currentLock;
-    private PaymentInfoValidationStrategy paymentInfoValidationStrategy;
     private HashMap<String, String> paymentInfo = new HashMap<>();
 
     public RentBikeController(){
         this.paymentInfo = new HashMap<>();
-        paymentInfoValidationStrategy = new CardValidationStrategy();
     }
 
     public Invoice createInvoice(){
@@ -62,7 +56,7 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
 
     @Override
     public void validatePaymentInfo() throws InvalidPaymentInfoException {
-        paymentInfoValidationStrategy.validate(this.paymentInfo);
+        DataStore.getInstance().paymentInfoValidationStrategy.validate(this.paymentInfo);
     }
     
     public void rentBike() throws Exception{

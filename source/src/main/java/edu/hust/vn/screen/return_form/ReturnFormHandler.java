@@ -64,8 +64,7 @@ public class ReturnFormHandler extends BaseScreenHandler {
         Rental currentRental =  DataStore.getInstance().currentRental;
         bikeLicensePlate.setText(currentRental.getBike().getLicensePlate());
         bikeType.setText(currentRental.getBike().typeAsString());
-        RentBikeController rentBikeController = new RentBikeController();
-        bikeRentalFee.setText(String.valueOf(rentBikeController.getPricing().getPricing( (int) currentRental.getTotalTime() )));
+        bikeRentalFee.setText(String.valueOf(DataStore.getInstance().priceCalculatingStrategy.getPricing( (int) currentRental.getTotalTime() )));
         bikeTotalTime.setText(Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()));
 
         confirmBtn.setOnMouseClicked(e->{
