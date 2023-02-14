@@ -107,7 +107,6 @@ public class ReturnScreenHandler extends BaseScreenHandler {
             synchronized (ReturnScreenHandler.class){
                 if(instance == null){
                     instance = new ReturnScreenHandler();
-                    instance.setBaseController(new ReturnController());
                 }
             }
         }
@@ -125,7 +124,7 @@ public class ReturnScreenHandler extends BaseScreenHandler {
             try{
                 Rental currentRental =  DataStore.getInstance().currentRental;
                 currentRental.setEndTime(LocalDateTime.now());
-                currentRental.setActive(false);
+//                currentRental.setActive(false);
 
                 PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
                 paymentFormHandler.setPrevScreenHandler(BikeScreenHandler.getInstance(currentRental.getBike()));

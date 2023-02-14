@@ -2,6 +2,8 @@ package edu.hust.vn.screen.bike;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.controller.RentBikeController;
+import edu.hust.vn.controller.ReturnController;
+import edu.hust.vn.controller.ViewBikeController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.StandardEBike;
 import edu.hust.vn.model.bike.TwinBike;
@@ -129,6 +131,9 @@ public class BikeScreenHandler extends BaseScreenHandler {
         super(Configs.BIKE_SCREEN_PATH);
         this.bike = bike;
 
+        ViewBikeController ctl = new ViewBikeController();
+        setBaseController(ctl);
+
         setScreenTitle("Bike screen");
 
         ebrImage.setOnMouseClicked(e->{
@@ -166,6 +171,9 @@ public class BikeScreenHandler extends BaseScreenHandler {
         ObjectProperty<Bike> rentedBikeProp = currentRental.bikeProperty();
 
         rentalFeeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
+        rentalFee.textProperty().bind(Bindings.createStringBinding(
+            ()->String.valueOf(ctl.getPriceCalculatingStrategy().getPricing((int) currentRental.getTotalTime())),
+            currentRental.totalTimeProperty()));
 
         rentTime.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
         rentTime.textProperty().bind(Bindings.createStringBinding(()-> Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()), currentRental.totalTimeProperty()));
@@ -231,20 +239,18 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private EventHandler requestToReturnBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-
-            if ( timeline.getStatus() == Animation.Status.STOPPED ){
-                try {
-                    MessagePopup.getInstance().show("Is stopped, run to return bike", false);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }else{
-                try{
-                    ReturnScreenHandler.getInstance().show();
-                }catch (IOException e){
-                    e.printStackTrace();
-                }
+            Rental currentRental = DataStore.getInstance().currentRental;
+            currentRental.setActive(false);
+            try{
+                ReturnController rc = new ReturnController();
+                rc.setReturnedBike(currentRental.getBike());
+                ReturnScreenHandler returnScreenHandler = ReturnScreenHandler.getInstance();
+                returnScreenHandler.setBaseController(rc);
+                returnScreenHandler.show();
+            }catch (IOException e){
+                e.printStackTrace();
             }
+
         }
     };
 }
