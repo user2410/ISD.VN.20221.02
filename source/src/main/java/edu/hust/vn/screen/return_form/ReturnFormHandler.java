@@ -4,10 +4,14 @@ import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
 import edu.hust.vn.controller.PaymentInfoReceiverController;
 import edu.hust.vn.controller.RentBikeController;
+import edu.hust.vn.controller.strategy.pricing.IPricing;
+import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
+import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.invoice.RentalInvoiceScreenHandler;
+import edu.hust.vn.screen.payment.PaymentFormHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
@@ -64,28 +68,24 @@ public class ReturnFormHandler extends BaseScreenHandler {
         Rental currentRental =  DataStore.getInstance().currentRental;
         bikeLicensePlate.setText(currentRental.getBike().getLicensePlate());
         bikeType.setText(currentRental.getBike().typeAsString());
-        RentBikeController rentBikeController = new RentBikeController();
-        bikeRentalFee.setText(String.valueOf(rentBikeController.getPricing().getPricing( (int) currentRental.getTotalTime() )));
+        IPricing pricing = new Pricing();
+        bikeRentalFee.setText(String.valueOf(pricing.getPricing( (int) currentRental.getTotalTime() )));
         bikeTotalTime.setText(Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()));
 
         confirmBtn.setOnMouseClicked(e->{
-            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
-            ctl.setPaymentInfo("cardOwner", cardOwner.getText());
-            ctl.setPaymentInfo("cardNumber", cardNumber.getText());
-            ctl.setPaymentInfo("expDate", expDate.getText());
-            ctl.setPaymentInfo("cvvCode", cardCvv.getText());
+//            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
+//            ctl.setPaymentInfo("cardOwner", cardOwner.getText());
+//            ctl.setPaymentInfo("cardNumber", cardNumber.getText());
+//            ctl.setPaymentInfo("expDate", expDate.getText());
+//            ctl.setPaymentInfo("cvvCode", cardCvv.getText());
+//            ctl.validatePaymentInfo();
 
-            try{
-//                ctl.validatePaymentInfo();
-                RentalInvoiceScreenHandler rentalInvoiceScreen = new RentalInvoiceScreenHandler((RentBikeController) ctl);
-                rentalInvoiceScreen.setPrevScreenHandler(this);
-                rentalInvoiceScreen.show();
-            }catch ( InvalidPaymentInfoException | IOException ex){
-                try {
-                    MessagePopup.getInstance().show(ex.getMessage(), true);
-                } catch (IOException exc) {
-                    exc.printStackTrace();
-                }
+            try {
+                DataStore.getInstance().currentRental.clear();
+                HomeScreenHandler.getInstance().show();
+                MessagePopup.getInstance().show("Return success", false);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }

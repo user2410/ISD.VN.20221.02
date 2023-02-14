@@ -2,7 +2,7 @@ package edu.hust.vn.utils;
 
 public class Configs {
 
-    public static final String DB_URL = "jdbc:postgresql://localhost/root?user=root&password=secret";
+    public static final String DB_URL = "jdbc:postgresql://localhost/root?user=postgres&password=10026060";
 
     public static final String CURRENCY = "vnd";
 

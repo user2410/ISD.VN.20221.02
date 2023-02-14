@@ -20,12 +20,6 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
     private PaymentInfoValidationStrategy paymentInfoValidationStrategy;
     private HashMap<String, String> paymentInfo = new HashMap<>();
 
-    private IPricing pricing = new Pricing();
-
-    public IPricing getPricing() {
-        return pricing;
-    }
-
     public RentBikeController(){
         this.paymentInfo = new HashMap<>();
         paymentInfoValidationStrategy = new CardValidationStrategy();

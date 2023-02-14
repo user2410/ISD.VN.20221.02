@@ -4,8 +4,10 @@ import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.BarCodeNotFoundException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.controller.ReturnController;
+import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
+import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
@@ -69,13 +71,7 @@ public class ReturnScreenHandler extends BaseScreenHandler {
                     @Override
                     public void handle(Event event) {
 
-                        try {
-                            Rental currentRental = DataStore.getInstance().currentRental;
-                            ReturnFormHandler returnFormHandler = new ReturnFormHandler();
-                            returnFormHandler.show();
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
+                        selectLock(dock, searchInput.getText());
                     }
                 });
                 this.homeItems.add(returnDockCardHandler);
@@ -119,17 +115,18 @@ public class ReturnScreenHandler extends BaseScreenHandler {
         docksView.requestFocus();
     }
 
-    public void selectLock(String barCode){
-        ReturnController ctl = (ReturnController) getBaseController();
+    public void selectLock(Dock dock, String barCode){
+        ViewDockController ctl = new ViewDockController();
         try{
             try{
+                Lock lock = ctl.validateBarCode(dock, barCode);
                 Rental currentRental =  DataStore.getInstance().currentRental;
                 currentRental.setEndTime(LocalDateTime.now());
                 currentRental.setActive(false);
 
-                PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
-                paymentFormHandler.setPrevScreenHandler(BikeScreenHandler.getInstance(currentRental.getBike()));
-                paymentFormHandler.show();
+                currentRental.getBike().setLock(lock);
+                ReturnFormHandler returnFormHandler = new ReturnFormHandler();
+                returnFormHandler.show();
             } catch (InvalidBarcodeException e) {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
             } catch (BarCodeNotFoundException e){
