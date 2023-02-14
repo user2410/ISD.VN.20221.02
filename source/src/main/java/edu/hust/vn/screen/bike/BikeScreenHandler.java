@@ -9,6 +9,8 @@ import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.payment.PaymentFormHandler;
+import edu.hust.vn.screen.popup.MessagePopup;
+import edu.hust.vn.screen.return_bike.ReturnScreenHandler;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
 import javafx.animation.Animation;
@@ -229,7 +231,20 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private EventHandler requestToReturnBike = new EventHandler() {
         @Override
         public void handle(Event event) {
-            System.out.println("return bike");
+
+            if ( timeline.getStatus() == Animation.Status.STOPPED ){
+                try {
+                    MessagePopup.getInstance().show("Is stopped, run to return bike", false);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }else{
+                try{
+                    ReturnScreenHandler.getInstance().show();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
         }
     };
 }

@@ -1,13 +1,20 @@
 package edu.hust.vn.screen.return_bike;
 
 import edu.hust.vn.DataStore;
+import edu.hust.vn.common.exception.BarCodeNotFoundException;
+import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.controller.ReturnController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenHandler;
+import edu.hust.vn.screen.dock.DockScreenHandler;
 import edu.hust.vn.screen.dock_card.DockCardHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
+import edu.hust.vn.screen.payment.PaymentFormHandler;
+import edu.hust.vn.screen.popup.MessagePopup;
+import edu.hust.vn.screen.return_form.ReturnFormHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
@@ -23,6 +30,7 @@ import javafx.scene.layout.FlowPane;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class ReturnScreenHandler extends BaseScreenHandler {
@@ -46,10 +54,10 @@ public class ReturnScreenHandler extends BaseScreenHandler {
     private Label titleLabel;
 
     private ObservableList<DockCardHandler> homeItems;
+    private static ReturnScreenHandler instance;
 
     private ReturnScreenHandler() throws IOException {
-        super(Configs.HOME_SCREEN_PATH);
-        titleLabel.setText("Return Bike");
+        super(Configs.RETURN_SCREEN_PATH);
 
         homeItems = FXCollections.observableArrayList();
 
@@ -57,10 +65,17 @@ public class ReturnScreenHandler extends BaseScreenHandler {
 
         try{
             for(Dock dock : dockList){
-                DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler() {
+                DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler<>() {
                     @Override
                     public void handle(Event event) {
-                        getBaseController();
+
+                        try {
+                            Rental currentRental = DataStore.getInstance().currentRental;
+                            ReturnFormHandler returnFormHandler = new ReturnFormHandler();
+                            returnFormHandler.show();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                     }
                 });
                 this.homeItems.add(returnDockCardHandler);
@@ -72,44 +87,61 @@ public class ReturnScreenHandler extends BaseScreenHandler {
 
         ebrImage.setOnMouseClicked(e -> {
             try {
-                getBaseController().updateData();
                 HomeScreenHandler.getInstance().show();
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
 
-        searchInput.textProperty().addListener((observable, oldValue, newValue) -> {
-            if(newValue.length() == 0){
-                // reset dock view
-                for(int i=0; i<homeItems.size(); i++){
-                    DockCardHandler dc = homeItems.get(i);
-                    boolean old = dc.getShow();
-                    dc.setShow(true);
-                    if(!old) docksView.getChildren().add(i, dc.getContent());
-                }
-                return;
-            }
-            ArrayList<Dock> res = ((ReturnController)this.getBaseController()).searchDockList(newValue);
-            docksView.getChildren().clear();
-            for(DockCardHandler dc : homeItems){
-                boolean inRes = false;
-                for(Dock d : res){
-                    if(d.getId() == dc.getDockID()){
-                        docksView.getChildren().add(dc.getContent());
-                        inRes = true;
-                        break;
-                    }
-                }
-                dc.setShow(inRes);
+        rentedBikeImg.setOnMouseClicked(e -> {
+            try {
+                BikeScreenHandler.getInstance(DataStore.getInstance().currentRental.getBike()).show();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         });
+    }
+
+    public static ReturnScreenHandler getInstance() throws IOException {
+        if(instance == null){
+            synchronized (ReturnScreenHandler.class){
+                if(instance == null){
+                    instance = new ReturnScreenHandler();
+                    instance.setBaseController(new ReturnController());
+                }
+            }
+        }
+        return instance;
     }
 
     @Override
     public void onShow() {
         docksView.requestFocus();
+    }
+
+    public void selectLock(String barCode){
+        ReturnController ctl = (ReturnController) getBaseController();
+        try{
+            try{
+                Rental currentRental =  DataStore.getInstance().currentRental;
+                currentRental.setEndTime(LocalDateTime.now());
+                currentRental.setActive(false);
+
+                PaymentFormHandler paymentFormHandler = new PaymentFormHandler();
+                paymentFormHandler.setPrevScreenHandler(BikeScreenHandler.getInstance(currentRental.getBike()));
+                paymentFormHandler.show();
+            } catch (InvalidBarcodeException e) {
+                MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
+            } catch (BarCodeNotFoundException e){
+                MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
+            }
+        } catch (IOException e){
+            e.printStackTrace();
+            try {
+                MessagePopup.getInstance().show("System error "+e.getMessage(), true);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 }

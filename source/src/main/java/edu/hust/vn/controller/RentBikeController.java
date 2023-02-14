@@ -4,6 +4,8 @@ import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
 import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
 import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
+import edu.hust.vn.controller.strategy.pricing.IPricing;
+import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.invoice.Invoice;
@@ -17,6 +19,12 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
     private Lock currentLock;
     private PaymentInfoValidationStrategy paymentInfoValidationStrategy;
     private HashMap<String, String> paymentInfo = new HashMap<>();
+
+    private IPricing pricing = new Pricing();
+
+    public IPricing getPricing() {
+        return pricing;
+    }
 
     public RentBikeController(){
         this.paymentInfo = new HashMap<>();

@@ -1,16 +1,23 @@
 package edu.hust.vn.screen.return_form;
 
+import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
 import edu.hust.vn.controller.PaymentInfoReceiverController;
 import edu.hust.vn.controller.RentBikeController;
+import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.invoice.RentalInvoiceScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
+import edu.hust.vn.utils.Utils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 
 public class ReturnFormHandler extends BaseScreenHandler {
@@ -33,14 +40,33 @@ public class ReturnFormHandler extends BaseScreenHandler {
     @FXML
     private Button confirmBtn;
 
+    @FXML
+    private ImageView bikeImg;
+
+    @FXML
+    private Label bikeRentalFee;
+
+    @FXML
+    private Label bikeType;
+
+    @FXML
+    private TextField cardExpDate;
+
+    @FXML
+    private Label bikeLicensePlate;
+
+
+    @FXML
+    private Label bikeTotalTime;
     public ReturnFormHandler() throws IOException {
-        super(Configs.PAYMENT_FORM_PATH);
+        super(Configs.INVOICE_SCREEN_PATH);
 
-        setScreenTitle("Payment screen");
-
-        cancelBtn.setOnMouseClicked(e->{
-            getPrevScreenHandler().show();
-        });
+        Rental currentRental =  DataStore.getInstance().currentRental;
+        bikeLicensePlate.setText(currentRental.getBike().getLicensePlate());
+        bikeType.setText(currentRental.getBike().typeAsString());
+        RentBikeController rentBikeController = new RentBikeController();
+        bikeRentalFee.setText(String.valueOf(rentBikeController.getPricing().getPricing( (int) currentRental.getTotalTime() )));
+        bikeTotalTime.setText(Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()));
 
         confirmBtn.setOnMouseClicked(e->{
             PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();

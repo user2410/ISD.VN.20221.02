@@ -50,7 +50,7 @@ public class PaymentFormHandler extends BaseScreenHandler {
             ctl.setPaymentInfo("cvvCode", cardCvv.getText());
 
             try{
-                ctl.validatePaymentInfo();
+//                ctl.validatePaymentInfo();
                 RentalInvoiceScreenHandler rentalInvoiceScreen = new RentalInvoiceScreenHandler((RentBikeController) ctl);
                 rentalInvoiceScreen.setPrevScreenHandler(this);
                 rentalInvoiceScreen.show();
