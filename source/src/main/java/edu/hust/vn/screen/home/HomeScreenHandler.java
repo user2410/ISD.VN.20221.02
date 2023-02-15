@@ -2,13 +2,19 @@ package edu.hust.vn.screen.home;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.controller.HomeController;
+import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenHandler;
+import edu.hust.vn.screen.dock.DockScreenHandler;
+import edu.hust.vn.screen.dock_card.DockCardHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -51,7 +57,17 @@ public class HomeScreenHandler extends BaseScreenHandler{
 
         try{
             for(Dock dock : dockList){
-                DockCardHandler dockCardHandler = DockCardHandler.getInstance(dock);
+                DockCardHandler dockCardHandler = new DockCardHandler(dock, new EventHandler() {
+                    @Override
+                    public void handle(Event event) {
+                        try {
+                            DockScreenHandler dockScreen = DockScreenHandler.getInstance(dock);
+                            dockScreen.show();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                });
                 this.homeItems.add(dockCardHandler);
                 docksView.getChildren().add(dockCardHandler.getContent());
             }
@@ -67,11 +83,16 @@ public class HomeScreenHandler extends BaseScreenHandler{
             }
         });
 
-        rentedBikeImg.visibleProperty().bind(Bindings.createBooleanBinding(() -> (DataStore.getInstance().rentedBike.get() != null), DataStore.getInstance().rentedBike));
-        rentedBikeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (DataStore.getInstance().rentedBike.get() != null), DataStore.getInstance().rentedBike));
+        ObjectProperty<Bike> rentedBike = DataStore.getInstance().currentRental.bikeProperty();
+        rentedBikeImg.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null), rentedBike));
+        rentedBikeLabel.visibleProperty().bind(Bindings.createBooleanBinding(() -> (rentedBike.get() != null), rentedBike));
 
         rentedBikeImg.setOnMouseClicked(e -> {
-
+            try {
+                BikeScreenHandler.getInstance(DataStore.getInstance().currentRental.getBike()).show();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
         });
 
         searchInput.textProperty().addListener((observable, oldValue, newValue) -> {

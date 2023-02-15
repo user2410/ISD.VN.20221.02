@@ -1,6 +1,7 @@
 package edu.hust.vn.screen.dock;
 
 import edu.hust.vn.common.exception.BarCodeNotFoundException;
+import edu.hust.vn.common.exception.BikeNotAvailableException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
@@ -14,6 +15,7 @@ import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -23,6 +25,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DockScreenHandler extends BaseScreenHandler {
 
@@ -48,13 +52,7 @@ public class DockScreenHandler extends BaseScreenHandler {
     private Button barCodeSubmitBtn;
 
     @FXML
-    private TableView<DockBike> standardBikeTbl;
-
-    @FXML
-    private TableView<DockEBike> standardEBikeTbl;
-
-    @FXML
-    private TableView<DockBike> standardTBikeTbl;
+    private TableView<DockBike> bikeTbl;
 
     private static ObservableMap<Dock, DockScreenHandler> dockScreens = FXCollections.observableHashMap();
     private Dock dock;
@@ -77,24 +75,15 @@ public class DockScreenHandler extends BaseScreenHandler {
         dockTitle.textProperty().bind(dock.nameProperty());
         address.textProperty().bind(dock.addressProperty());
 
-        initTable(standardBikeTbl);
-        initTable(standardEBikeTbl);
-        initTable(standardTBikeTbl);
-
-        ObservableList<Lock> locks = dock.getLocks();
-        for(Lock lock : locks){
-            if(lock.getState() == Lock.LOCK_STATE.RELEASED){
-                continue;
-            }
-            Bike bike = lock.getBike();
-            if(bike instanceof StandardBike){
-                standardBikeTbl.getItems().add(new DockBike(this, bike, lock));
-            } else if (bike instanceof StandardEBike) {
-                standardEBikeTbl.getItems().add(new DockEBike(this, (StandardEBike) bike, lock));
-            } else if (bike instanceof TwinBike) {
-                standardTBikeTbl.getItems().add(new DockBike(this, bike, lock));
-            }
-        }
+        TableColumn<DockBike, String> licensePlateCol = new TableColumn<>("License Plate");
+        licensePlateCol.setCellValueFactory(new PropertyValueFactory<>("licensePlate"));
+        TableColumn<DockBike, String> barCodeCol = new TableColumn<>("Bar code");
+        barCodeCol.setCellValueFactory(new PropertyValueFactory<>("barCode"));
+        TableColumn<DockBike, String> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
+        TableColumn<DockBike, Button> rentBikeCol = new TableColumn<>("View this bike");
+        rentBikeCol.setCellValueFactory(new PropertyValueFactory<>("selectBike"));
+        bikeTbl.getColumns().addAll(licensePlateCol, barCodeCol, typeCol, rentBikeCol);
 
         barCodeSubmitBtn.setOnMouseClicked(e -> selectBike(barCodeInput.getText()));
     }
@@ -110,30 +99,24 @@ public class DockScreenHandler extends BaseScreenHandler {
         return dockScreens.get(dock);
     }
 
-    private void initTable(TableView tbl) {
-        TableColumn<DockBike, String> licensePlateCol = new TableColumn<>("License Plate");
-        licensePlateCol.setCellValueFactory(new PropertyValueFactory<>("licensePlate"));
-        TableColumn<DockBike, String> barCodeCol = new TableColumn<>("Bar code");
-        barCodeCol.setCellValueFactory(new PropertyValueFactory<>("barCode"));
-        TableColumn<DockBike, Button> rentBikeCol = new TableColumn<>("View this bike");
-        rentBikeCol.setCellValueFactory(new PropertyValueFactory<>("selectBike"));
-
-        if(tbl == standardEBikeTbl){
-            TableColumn<DockEBike, Float> batteryLifeCol = new TableColumn<>("Battery life");
-            batteryLifeCol.setCellValueFactory(new PropertyValueFactory<>("batteryLife"));
-            TableColumn<DockEBike, Float> remainingBatteryLifeCol = new TableColumn<>("Remaining battery");
-            remainingBatteryLifeCol.setCellValueFactory(new PropertyValueFactory<>("remainingBatteryLife"));
-            tbl.getColumns().addAll(licensePlateCol, barCodeCol, batteryLifeCol, remainingBatteryLifeCol, rentBikeCol);
-
-        }else{
-            tbl.getColumns().addAll(licensePlateCol, barCodeCol, rentBikeCol);
-        }
-    }
-
     @Override
     public void onShow() {
         availableLots.setText("Available lots: "+dock.getAvailableLots());
         availableBikes.setText("Available bikes: "+dock.getAvailableBikes());
+        ObservableList<DockBike> list = bikeTbl.getItems();
+        list.clear();
+        for(Lock lock : dock.getLocks()){
+            if(lock.getState() == Lock.LOCK_STATE.RELEASED){
+                for(DockBike dockBike : list){
+                    if(dockBike.getLock().getId() == dock.getId()){
+                        list.remove(dockBike);
+                        break;
+                    }
+                }
+            }else{
+                list.add(new DockBike(this, lock));
+            }
+        }
     }
 
     public void selectBike(String barCode){
@@ -143,10 +126,12 @@ public class DockScreenHandler extends BaseScreenHandler {
                 Lock lock = ctl.validateBarCode(this.dock, barCode);
                 Bike bike = lock.getBike();
                 BikeScreenHandler.getInstance(bike).show();
-            } catch (InvalidBarcodeException e) {
+            } catch (InvalidBarcodeException | IllegalArgumentException e) {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
             } catch (BarCodeNotFoundException e){
                 MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
+            } catch (BikeNotAvailableException e){
+                MessagePopup.getInstance().show("There is no bike attached to lock "+barCode, false);
             }
         } catch (IOException e){
             e.printStackTrace();

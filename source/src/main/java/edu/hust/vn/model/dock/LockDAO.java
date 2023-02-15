@@ -4,10 +4,7 @@ import edu.hust.vn.DataStore;
 import edu.hust.vn.model.DAO;
 import edu.hust.vn.model.bike.Bike;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +45,9 @@ public class LockDAO extends DAO {
                     int bikeId = resultSet.getInt("bikeId");
                     Bike attachedBike = DataStore.getInstance().getBikeById(bikeId);
                     lock.setBike(attachedBike);
-                    attachedBike.setLock(lock);
+                    if(attachedBike != null){
+                        attachedBike.setLock(lock);
+                    }
                     locks.add(lock);
                 }
             }
@@ -65,4 +64,26 @@ public class LockDAO extends DAO {
         }
     }
     */
+
+    public int takeBike(int lockId) throws SQLException {
+
+        try(PreparedStatement statement = conn.prepareStatement("UPDATE \"Lock\" SET \"bikeId\" = ? , \"status\" = ? WHERE \"id\" = ? ;")){
+            statement.setNull(1, Types.BIGINT);
+            statement.setObject(2, Lock.LOCK_STATE.RELEASED, Types.OTHER);
+            statement.setInt(3, lockId);
+            System.out.println(statement.toString());
+            return statement.executeUpdate();
+        }
+    }
+
+    public int addBike(int lockId, int bikeId) throws SQLException {
+
+        try(PreparedStatement statement = conn.prepareStatement("UPDATE \"Lock\" SET \"bikeId\" = ? , \"status\" = ? WHERE \"id\" = ? ;")){
+            statement.setInt(1, bikeId);
+            statement.setObject(2, Lock.LOCK_STATE.LOCKED, Types.OTHER);
+            statement.setInt(3, lockId);
+            System.out.println(statement.toString());
+            return statement.executeUpdate();
+        }
+    }
 }

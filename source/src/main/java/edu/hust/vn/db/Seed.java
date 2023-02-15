@@ -57,7 +57,7 @@ public class Seed {
         try {
             PreparedStatement ps = conn.prepareStatement("INSERT INTO \"Lock\" (\"barCode\", \"bikeId\", \"dockId\", status) VALUES (?, ?, ?, ?)");
             for (int i = 0; i < count; i++) {
-                int bikeId = RANDOM.nextInt(100) + 1;
+                int bikeId = (i + 1);
                 ps.setString(1, randomUUID());
                 ps.setInt(2, bikeId);
                 ps.setInt(3, RANDOM.nextInt(50) + 1);

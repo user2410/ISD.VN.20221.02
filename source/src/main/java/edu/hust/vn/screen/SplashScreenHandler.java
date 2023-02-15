@@ -35,11 +35,10 @@ public class SplashScreenHandler implements Initializable {
         // After fade in, start fade out
         fadeIn.play();
         fadeIn.setOnFinished((e) -> {
+            // Initializing data
+            DataStore.getInstance();
             fadeOut.play();
         });
-
-        // Initializing data
-        DataStore.getInstance();
 
         // After fade out, load actual content
         fadeOut.setOnFinished((e) -> {

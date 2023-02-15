@@ -12,7 +12,7 @@ public class Lock {
     public enum LOCK_STATE{
         RELEASED, LOCKED
     }
-    private LOCK_STATE state;
+    private ObjectProperty<LOCK_STATE> state = new SimpleObjectProperty<>();
 
     public Lock(){}
 
@@ -61,16 +61,20 @@ public class Lock {
     }
 
     public void setBike(Bike bike) {
-        this.bike.set(bike);
         if(bike == null){
-            this.state = LOCK_STATE.RELEASED;
+            this.state.set(LOCK_STATE.RELEASED);
         }else{
-            this.state = LOCK_STATE.LOCKED;
+            this.state.set(LOCK_STATE.LOCKED);
         }
+        this.bike.set(bike);
+    }
+
+    public ObjectProperty<LOCK_STATE> stateProperty() {
+        return state;
     }
 
     public LOCK_STATE getState() {
-        return state;
+        return state.get();
     }
 
     @Override
@@ -85,6 +89,6 @@ public class Lock {
 
     @Override
     public String toString(){
-        return "id = " + id + ", barCode = " + barCode + ", dockId = " + dockId + ", status = " + state;
+        return "id = " + id + ", barCode = " + barCode.get() + ", dockId = " + dockId + ", status = " + state.get();
     }
 }

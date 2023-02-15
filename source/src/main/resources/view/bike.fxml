@@ -189,7 +189,7 @@
                               <Cursor fx:constant="HAND" />
                            </cursor>
                         </ImageView>
-                        <Label fx:id="rentTimeBtn" text="Time">
+                        <Label fx:id="rentTime" text="Time">
                            <font>
                               <Font size="20.0" />
                            </font>

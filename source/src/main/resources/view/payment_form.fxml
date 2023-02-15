@@ -17,7 +17,7 @@
          <children>
             <ImageView fitHeight="102.0" fitWidth="205.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../../gui/images/logo.png" />
+                  <Image url="@../images/logo.png" />
                </image>
             </ImageView>
             <Label prefHeight="126.0" prefWidth="156.0" text="PAYMENT" textFill="#077af2">

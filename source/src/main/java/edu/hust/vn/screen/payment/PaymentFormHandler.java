@@ -1,6 +1,11 @@
 package edu.hust.vn.screen.payment;
 
+import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
+import edu.hust.vn.controller.PaymentInfoReceiverController;
+import edu.hust.vn.controller.RentBikeController;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.invoice.RentalInvoiceScreenHandler;
+import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -32,6 +37,31 @@ public class PaymentFormHandler extends BaseScreenHandler {
         super(Configs.PAYMENT_FORM_PATH);
 
         setScreenTitle("Payment screen");
+
+        cancelBtn.setOnMouseClicked(e->{
+            getPrevScreenHandler().show();
+        });
+
+        confirmBtn.setOnMouseClicked(e->{
+            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
+            ctl.setPaymentInfo("cardOwner", cardOwner.getText());
+            ctl.setPaymentInfo("cardNumber", cardNumber.getText());
+            ctl.setPaymentInfo("expDate", expDate.getText());
+            ctl.setPaymentInfo("cvvCode", cardCvv.getText());
+
+            try{
+                ctl.validatePaymentInfo();
+                RentalInvoiceScreenHandler rentalInvoiceScreen = new RentalInvoiceScreenHandler((RentBikeController) ctl);
+                rentalInvoiceScreen.setPrevScreenHandler(this);
+                rentalInvoiceScreen.show();
+            }catch ( InvalidPaymentInfoException | IOException ex){
+                try {
+                    MessagePopup.getInstance().show(ex.getMessage(), true);
+                } catch (IOException exc) {
+                    exc.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
