@@ -38,6 +38,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 
 public class BikeScreenHandler extends BaseScreenHandler {
 
@@ -243,11 +244,12 @@ public class BikeScreenHandler extends BaseScreenHandler {
         public void handle(Event event) {
             Rental currentRental = DataStore.getInstance().currentRental;
             currentRental.setActive(false);
+            currentRental.setEndTime(LocalDateTime.now());
             try{
                 ReturnController rc = new ReturnController();
-                rc.setReturnedBike(currentRental.getBike());
                 ReturnScreenHandler returnScreenHandler = ReturnScreenHandler.getInstance();
                 returnScreenHandler.setBaseController(rc);
+                returnScreenHandler.setPrevScreenHandler(BikeScreenHandler.getInstance(currentRental.getBike()));
                 returnScreenHandler.show();
             }catch (IOException e){
                 e.printStackTrace();

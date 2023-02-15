@@ -1,6 +1,7 @@
 package edu.hust.vn.screen.dock;
 
 import edu.hust.vn.common.exception.BarCodeNotFoundException;
+import edu.hust.vn.common.exception.BikeNotAvailableException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
@@ -129,6 +130,8 @@ public class DockScreenHandler extends BaseScreenHandler {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
             } catch (BarCodeNotFoundException e){
                 MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
+            } catch (BikeNotAvailableException e){
+                MessagePopup.getInstance().show("There is no bike attached to lock "+barCode, false);
             }
         } catch (IOException e){
             e.printStackTrace();

@@ -65,7 +65,7 @@ public class CardValidationStrategy implements PaymentInfoValidationStrategy{
         // check expire date is not empty
         if (expDate == null || expDate.isBlank()) throw new NullExpDateException();
 
-        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyyMMdd");
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
         try {
             java.util.Date ret = sdf.parse(expDate.trim());
             if (!sdf.format(ret).equals(expDate.trim())) {

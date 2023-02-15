@@ -11,6 +11,7 @@ import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
+import edu.hust.vn.model.rental.Rental;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,36 +19,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ReturnController extends BaseController implements PaymentInfoReceiverController{
-
-    private Bike returnedBike;
-    private Dock returnedToDock;
-    private Lock returnedToLock;
-
     private HashMap<String, String> paymentInfo = new HashMap<>();
-
-    public Bike getReturnedBike() {
-        return returnedBike;
-    }
-
-    public void setReturnedBike(Bike returnedBike) {
-        this.returnedBike = returnedBike;
-    }
-
-    public Lock getReturnedToLock() {
-        return returnedToLock;
-    }
-
-    public void setReturnedToLock(Lock returnedToLock) {
-        this.returnedToLock = returnedToLock;
-    }
-
-    public Dock getReturnedToDock() {
-        return returnedToDock;
-    }
-
-    public void setReturnedToDock(Dock returnedToDock) {
-        this.returnedToDock = returnedToDock;
-    }
 
     public Lock validateBarCode(Dock dock, String barCode) throws
         InvalidBarcodeException, BarCodeNotFoundException, LockNotFreeException, IllegalArgumentException {
@@ -77,5 +49,25 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
     @Override
     public void validatePaymentInfo() throws InvalidPaymentInfoException {
         DataStore.getInstance().paymentInfoValidationStrategy.validate(this.paymentInfo);
+    }
+
+    public void attachBikeToLock(Lock lock){
+        Bike rentedBike = DataStore.getInstance().currentRental.getBike();
+        lock.setBike(rentedBike);
+        rentedBike.setLock(lock);
+    }
+
+    public void returnBike(){
+        Rental currentRental = DataStore.getInstance().currentRental;
+        Bike rentedBike = currentRental.getBike();
+        int deposit = (int) (rentedBike.getPrice()*0.4);
+        int rentalFee = DataStore.getInstance().priceCalculatingStrategy.getPricing((int)currentRental.getTotalTime());
+        PaymentController paymentController = new PaymentController(paymentInfo);
+        paymentController.payRental(rentalFee - deposit);
+        // clear current rental
+        currentRental.clear();
+        // put the bike back to the selected dock
+        // - in db
+//        DataStore.getInstance()
     }
 }

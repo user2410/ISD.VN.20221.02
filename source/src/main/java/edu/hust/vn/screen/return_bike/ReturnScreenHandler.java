@@ -3,6 +3,7 @@ package edu.hust.vn.screen.return_bike;
 import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.BarCodeNotFoundException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
+import edu.hust.vn.common.exception.LockNotFreeException;
 import edu.hust.vn.controller.ReturnController;
 import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
@@ -44,16 +45,13 @@ public class ReturnScreenHandler extends BaseScreenHandler {
     private TextField searchInput;
 
     @FXML
-    private ImageView rentedBikeImg;
-
-    @FXML
-    private Label rentedBikeLabel;
-
-    @FXML
     private FlowPane docksView;
 
     @FXML
     private Label titleLabel;
+
+    @FXML
+    private ImageView cancelReturnImg;
 
     private ObservableList<DockCardHandler> homeItems;
     private static ReturnScreenHandler instance;
@@ -97,12 +95,9 @@ public class ReturnScreenHandler extends BaseScreenHandler {
             }
         });
 
-        rentedBikeImg.setOnMouseClicked(e -> {
-            try {
-                BikeScreenHandler.getInstance(DataStore.getInstance().currentRental.getBike()).show();
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
+        cancelReturnImg.setOnMouseClicked(e->{
+            DataStore.getInstance().currentRental.setActive(true);
+            getPrevScreenHandler().show();
         });
     }
 
@@ -127,18 +122,17 @@ public class ReturnScreenHandler extends BaseScreenHandler {
         try{
             try{
                 Lock lock = returnController.validateBarCode(dock, barCode);
-                Rental currentRental =  DataStore.getInstance().currentRental;
-                currentRental.setEndTime(LocalDateTime.now());
-//                currentRental.setActive(false);
+                returnController.attachBikeToLock(lock);
 
-                currentRental.getBike().setLock(lock);
                 ReturnFormHandler returnFormHandler = new ReturnFormHandler();
                 returnFormHandler.setBaseController(getBaseController());
                 returnFormHandler.show();
-            } catch (InvalidBarcodeException e) {
+            } catch (InvalidBarcodeException | IllegalArgumentException e) {
                 MessagePopup.getInstance().show("Invalid bar code: "+barCode, true);
             } catch (BarCodeNotFoundException e){
                 MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
+            } catch (LockNotFreeException e){
+                MessagePopup.getInstance().show("The lock is already occupied: "+barCode, false);
             }
         } catch (IOException e){
             e.printStackTrace();

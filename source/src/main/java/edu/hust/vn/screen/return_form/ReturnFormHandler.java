@@ -4,6 +4,7 @@ import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
 import edu.hust.vn.controller.PaymentInfoReceiverController;
 import edu.hust.vn.controller.RentBikeController;
+import edu.hust.vn.controller.ReturnController;
 import edu.hust.vn.controller.strategy.pricing.IPricing;
 import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.rental.Rental;
@@ -36,9 +37,6 @@ public class ReturnFormHandler extends BaseScreenHandler {
     private TextField cardCvv;
 
     @FXML
-    private Button cancelBtn;
-
-    @FXML
     private Button confirmBtn;
 
     @FXML
@@ -56,22 +54,24 @@ public class ReturnFormHandler extends BaseScreenHandler {
     @FXML
     private Label bikeLicensePlate;
 
-
     @FXML
     private Label bikeTotalTime;
+
     public ReturnFormHandler() throws IOException {
         super(Configs.INVOICE_SCREEN_PATH);
 
         Rental currentRental =  DataStore.getInstance().currentRental;
+
+        bikeImg.setImage(DataStore.getInstance().bikeImages.get(currentRental.getBike().typeAsString()));
+
         bikeLicensePlate.setText(currentRental.getBike().getLicensePlate());
         bikeType.setText(currentRental.getBike().typeAsString());
-        IPricing pricing = new Pricing();
-        bikeRentalFee.setText(String.valueOf(pricing.getPricing( (int) currentRental.getTotalTime() )));
+        bikeRentalFee.setText(String.valueOf(DataStore.getInstance().priceCalculatingStrategy.getPricing( (int) currentRental.getTotalTime() )));
 
         bikeTotalTime.setText(Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()));
 
         confirmBtn.setOnMouseClicked( e->{
-            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
+            ReturnController ctl = (ReturnController) getBaseController();
             ctl.setPaymentInfo("cardOwner", cardOwner.getText());
             ctl.setPaymentInfo("cardNumber", cardNumber.getText());
             ctl.setPaymentInfo("expDate", cardExpDate.getText());
@@ -79,7 +79,8 @@ public class ReturnFormHandler extends BaseScreenHandler {
 
             try {
                 ctl.validatePaymentInfo();
-                DataStore.getInstance().currentRental.clear();
+                ctl.returnBike();
+
                 HomeScreenHandler.getInstance().show();
                 MessagePopup.getInstance().show("Return success", false);
             } catch (InvalidPaymentInfoException | IOException ex) {
