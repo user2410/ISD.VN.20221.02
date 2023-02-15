@@ -20,6 +20,8 @@ public class Configs {
 
     public static final String POPUP_MSG_SCREEN_PATH = "/view/message_popup.fxml";
 
+
+    public static final String PROCESS_TRANSACTION_URL = "";
     public static final String INVOICE_SCREEN_PATH = "/view/invoice.fxml";
 
 }

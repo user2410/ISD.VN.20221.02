@@ -62,8 +62,13 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
         Bike rentedBike = currentRental.getBike();
         int deposit = (int) (rentedBike.getPrice()*0.4);
         int rentalFee = DataStore.getInstance().priceCalculatingStrategy.getPricing((int)currentRental.getTotalTime());
+        int amount = rentalFee - deposit;
         PaymentController paymentController = new PaymentController(paymentInfo);
-        paymentController.payRental(rentalFee - deposit);
+        if(amount >= 0){
+            paymentController.payRental(amount);
+        }else{
+            paymentController.refund(-amount);
+        }
         // clear current rental
         currentRental.clear();
         // put the bike back to the selected dock

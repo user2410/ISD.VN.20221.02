@@ -61,7 +61,8 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
     
     public void rentBike() throws Exception{
         PaymentController paymentController = new PaymentController(paymentInfo);
-        paymentController.payRental((int) (selectedBike.getPrice()*0.4));
+        int deposit = (int) (selectedBike.getPrice()*0.4);
+        paymentController.payDeposit(deposit);
         // remove bike from lock from
         // - local instance
         currentLock.setBike(null);

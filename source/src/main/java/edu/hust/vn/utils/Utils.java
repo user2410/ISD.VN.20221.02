@@ -2,6 +2,9 @@ package edu.hust.vn.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Utils {
 
@@ -18,5 +21,11 @@ public class Utils {
         int minute = (int) ((seconds % 3600) / 60);
         int second = (int) (seconds % 60);
         return String.format("%02d:%02d:%02d", hour, minute, second);
+    }
+
+    public static String getToday() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        return dateFormat.format(date);
     }
 }

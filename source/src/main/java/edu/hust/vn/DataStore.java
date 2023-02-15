@@ -11,6 +11,7 @@ import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.DockDAO;
 import edu.hust.vn.model.dock.LockDAO;
 import edu.hust.vn.model.rental.Rental;
+import edu.hust.vn.subsystem.InterbankSubsystem;
 import edu.hust.vn.utils.Configs;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -28,6 +29,8 @@ public class DataStore {
     private static DataStore instance;
 
     public Connection dbConn;
+    public InterbankSubsystem interbank;
+
     public LockDAO lockDAO;
     public DockDAO dockDAO;
     public BikeDAO bikeDAO;
@@ -44,6 +47,8 @@ public class DataStore {
     private DataStore(){
         try {
             dbConn = new EBRDB(Configs.DB_URL).getConn();
+
+            interbank = new InterbankSubsystem();
 
             dockDAO = new DockDAO(dbConn);
             lockDAO = new LockDAO(dbConn);
