@@ -1,5 +1,7 @@
 package edu.hust.vn;
 
+import edu.hust.vn.controller.strategy.deposit_calculator.DepositCalculatingStrategy;
+import edu.hust.vn.controller.strategy.deposit_calculator.DepositCalculator1;
 import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
 import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
 import edu.hust.vn.controller.strategy.pricing.IPricing;
@@ -13,8 +15,6 @@ import edu.hust.vn.model.dock.LockDAO;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.subsystem.InterbankSubsystem;
 import edu.hust.vn.utils.Configs;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
@@ -42,7 +42,8 @@ public class DataStore {
     public Map<String, Image> bikeImages;
 
     public PaymentInfoValidationStrategy paymentInfoValidationStrategy;
-    public IPricing priceCalculatingStrategy;
+    public DepositCalculatingStrategy depositCalculatingStrategy;
+    public IPricing rentalFeeCalculatingStrategy;
 
     private DataStore(){
         try {
@@ -57,7 +58,8 @@ public class DataStore {
             currentRental = new Rental();
 
             paymentInfoValidationStrategy = new CardValidationStrategy();
-            priceCalculatingStrategy = new Pricing();
+            depositCalculatingStrategy = new DepositCalculator1();
+            rentalFeeCalculatingStrategy = new Pricing();
         } catch (Exception e) {
             e.printStackTrace();
             System.exit(1);

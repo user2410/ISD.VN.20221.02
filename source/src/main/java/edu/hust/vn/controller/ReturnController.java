@@ -2,18 +2,14 @@ package edu.hust.vn.controller;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.BarCodeNotFoundException;
-import edu.hust.vn.common.exception.BikeNotAvailableException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.common.exception.LockNotFreeException;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
-import edu.hust.vn.controller.strategy.pricing.IPricing;
-import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.rental.Rental;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -60,8 +56,8 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
     public void returnBike(){
         Rental currentRental = DataStore.getInstance().currentRental;
         Bike rentedBike = currentRental.getBike();
-        int deposit = (int) (rentedBike.getPrice()*0.4);
-        int rentalFee = DataStore.getInstance().priceCalculatingStrategy.getPricing((int)currentRental.getTotalTime());
+        int deposit = DataStore.getInstance().depositCalculatingStrategy.getDeposit(rentedBike.getPrice());
+        int rentalFee = DataStore.getInstance().rentalFeeCalculatingStrategy.getPricing((int)currentRental.getTotalTime());
         int amount = rentalFee - deposit;
         PaymentController paymentController = new PaymentController(paymentInfo);
         if(amount >= 0){
