@@ -5,6 +5,7 @@ import edu.hust.vn.model.dock.Dock;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BaseController {
     public void updateData() throws SQLException {
@@ -16,10 +17,10 @@ public class BaseController {
      *
      * @return ArrayList[Dock]
      */
-    public ArrayList<Dock> searchDockList(String keyword) {
+    public ArrayList<Dock> searchDockList(List<Dock> dockList, String keyword) {
         ArrayList<Dock> res = new ArrayList();
         String lowerKW = keyword.toLowerCase();
-        DataStore.getInstance().dockList.forEach(dock -> {
+        dockList.forEach(dock -> {
             if(dock.getName().toLowerCase().contains(lowerKW)
                 || dock.getAddress().toLowerCase().contains(lowerKW)) {
                 res.add(dock);

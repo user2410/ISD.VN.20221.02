@@ -22,6 +22,7 @@ import edu.hust.vn.utils.Configs;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -63,29 +64,31 @@ public class ReturnScreenHandler extends BaseScreenHandler {
 
         ObservableList<Dock> dockList = DataStore.getInstance().dockList;
 
-        try{
-            for(Dock dock : dockList){
-                DockCardHandler returnDockCardHandler = new DockCardHandler(dock, new EventHandler<>() {
-                    @Override
-                    public void handle(Event event) {
-                        if (searchInput.getText().equals("")){
-                            try {
-                                MessagePopup.getInstance().show("please enter bar code", false);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }else{
-                            selectLock(dock, searchInput.getText());
-                        }
-
-                    }
-                });
-                this.homeItems.add(returnDockCardHandler);
-                docksView.getChildren().add(returnDockCardHandler.getContent());
-            }
-        }catch (IOException e){
-            e.printStackTrace();
+        for(Dock dock : dockList){
+            addNewDockCard(dock);
         }
+
+        // sync changes between DataStore dockList and homeItems/docksView
+        dockList.addListener((ListChangeListener.Change<? extends Dock> c) -> {
+            while (c.next()){
+                if(c.wasAdded()){
+                    c.getAddedSubList().forEach(dock -> {
+                        addNewDockCard(dock);
+                    });
+                }
+                if(c.wasRemoved()){
+                    c.getRemoved().forEach(dock -> {
+                        for(DockCardHandler dc : homeItems){
+                            if(dc.getDockID() == dock.getId()){
+                                homeItems.remove(dc);
+                                docksView.getChildren().remove(dc);
+                                break;
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         ebrImage.setOnMouseClicked(e -> {
             try {
@@ -99,6 +102,29 @@ public class ReturnScreenHandler extends BaseScreenHandler {
             DataStore.getInstance().currentRental.setActive(true);
             getPrevScreenHandler().show();
         });
+    }
+
+    private void addNewDockCard(Dock dock) {
+        try{
+            DockCardHandler dockCardHandler = new DockCardHandler(dock, new EventHandler() {
+                @Override
+                public void handle(Event event) {
+                    if (searchInput.getText().length() == 0){
+                        try {
+                            MessagePopup.getInstance().show("please enter bar code", false);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else{
+                        selectLock(dock, searchInput.getText());
+                    }
+                }
+            });
+            this.homeItems.add(dockCardHandler);
+            this.docksView.getChildren().add(dockCardHandler.getContent());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public static ReturnScreenHandler getInstance() throws IOException {

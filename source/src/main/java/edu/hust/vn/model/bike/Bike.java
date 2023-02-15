@@ -66,4 +66,13 @@ public abstract class Bike {
     }
 
     public abstract String typeAsString();
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof Bike){
+            Bike bike = (Bike)o;
+            return bike.id == this.id;
+        }
+        return false;
+    }
 }
