@@ -68,7 +68,7 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
         currentLock.setBike(null);
         selectedBike.setLock(null);
         // - database
-//        DataStore.getInstance().lockDAO.takeBike(currentLock.getId());
+        DataStore.getInstance().lockDAO.takeBike(currentLock.getId());
 
         // set current rental instance
         Rental rental = DataStore.getInstance().currentRental;

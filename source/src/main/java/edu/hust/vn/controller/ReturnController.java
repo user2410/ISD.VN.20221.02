@@ -10,6 +10,7 @@ import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.rental.Rental;
 
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -47,10 +48,14 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
         DataStore.getInstance().paymentInfoValidationStrategy.validate(this.paymentInfo);
     }
 
-    public void attachBikeToLock(Lock lock){
+    public void attachBikeToLock(Lock lock) throws SQLException {
         Bike rentedBike = DataStore.getInstance().currentRental.getBike();
+        // put the bike back to the selected dock
+        // - local
         lock.setBike(rentedBike);
         rentedBike.setLock(lock);
+        // - database
+        DataStore.getInstance().lockDAO.attachBike(lock.getId(), rentedBike.getId());
     }
 
     public void returnBike(){
@@ -67,8 +72,6 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
         }
         // clear current rental
         currentRental.clear();
-        // put the bike back to the selected dock
-        // - in db
-//        DataStore.getInstance()
+
     }
 }

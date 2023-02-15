@@ -159,6 +159,8 @@ public class ReturnScreenHandler extends BaseScreenHandler {
                 MessagePopup.getInstance().show("Bar code not found: "+barCode, false);
             } catch (LockNotFreeException e){
                 MessagePopup.getInstance().show("The lock is already occupied: "+barCode, false);
+            } catch (SQLException e) {
+                MessagePopup.getInstance().show("Internal error: " + e.getMessage(), true);
             }
         } catch (IOException e){
             e.printStackTrace();
