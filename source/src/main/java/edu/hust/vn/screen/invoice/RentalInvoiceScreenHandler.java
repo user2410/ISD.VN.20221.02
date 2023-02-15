@@ -64,7 +64,7 @@ public class RentalInvoiceScreenHandler extends BaseScreenHandler {
 
         bikeLicensePlate.setText(bike.getLicensePlate());
         bikeType.setText(bike.typeAsString());
-        bikeDeposit.setText(Utils.round(bike.priceProperty().get() * 0.4, 2) + Configs.CURRENCY);
+        bikeDeposit.setText(DataStore.getInstance().depositCalculatingStrategy.getDeposit(bike.getPrice()) + Configs.CURRENCY);
 
         Map<String, String> paymentInfo = ctl.getPaymentInfo();
         cardNumber.setText(paymentInfo.get("cardNumber"));

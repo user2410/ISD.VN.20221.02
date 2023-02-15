@@ -2,17 +2,10 @@ package edu.hust.vn.screen.return_form;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
-import edu.hust.vn.controller.PaymentInfoReceiverController;
-import edu.hust.vn.controller.RentBikeController;
 import edu.hust.vn.controller.ReturnController;
-import edu.hust.vn.controller.strategy.pricing.IPricing;
-import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
-import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
-import edu.hust.vn.screen.invoice.RentalInvoiceScreenHandler;
-import edu.hust.vn.screen.payment.PaymentFormHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
@@ -22,7 +15,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 
-import javax.xml.crypto.Data;
 import java.io.IOException;
 
 public class ReturnFormHandler extends BaseScreenHandler {
@@ -66,7 +58,7 @@ public class ReturnFormHandler extends BaseScreenHandler {
 
         bikeLicensePlate.setText(currentRental.getBike().getLicensePlate());
         bikeType.setText(currentRental.getBike().typeAsString());
-        bikeRentalFee.setText(String.valueOf(DataStore.getInstance().priceCalculatingStrategy.getPricing( (int) currentRental.getTotalTime() )));
+        bikeRentalFee.setText(String.valueOf(DataStore.getInstance().rentalFeeCalculatingStrategy.getPricing( (int) currentRental.getTotalTime() )));
 
         bikeTotalTime.setText(Utils.convertSecondsToTimeFormat(currentRental.getTotalTime()));
 

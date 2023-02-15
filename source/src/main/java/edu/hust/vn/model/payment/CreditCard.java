@@ -3,8 +3,19 @@ package edu.hust.vn.model.payment;
 public class CreditCard {
     private String cardCode;
     private String owner;
-    private String cvvCode;
+    private int cvvCode;
     private String expDate;
+
+    public CreditCard(String cardCode, String owner, int cvvCode, String expDate) {
+        this.cardCode = cardCode;
+        this.owner = owner;
+        this.cvvCode = cvvCode;
+        this.expDate = expDate;
+    }
+
+    public CreditCard() {
+
+    }
 
     public String getCardCode() {
         return cardCode;
@@ -22,11 +33,11 @@ public class CreditCard {
         this.owner = owner;
     }
 
-    public String getCvvCode() {
+    public int getCvvCode() {
         return cvvCode;
     }
 
-    public void setCvvCode(String cvvCode) {
+    public void setCvvCode(int cvvCode) {
         this.cvvCode = cvvCode;
     }
 

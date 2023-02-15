@@ -76,7 +76,7 @@ public class LockDAO extends DAO {
         }
     }
 
-    public int addBike(int lockId, int bikeId) throws SQLException {
+    public int attachBike(int lockId, int bikeId) throws SQLException {
 
         try(PreparedStatement statement = conn.prepareStatement("UPDATE \"Lock\" SET \"bikeId\" = ? , \"status\" = ? WHERE \"id\" = ? ;")){
             statement.setInt(1, bikeId);

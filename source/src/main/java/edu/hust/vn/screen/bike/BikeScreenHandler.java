@@ -11,7 +11,6 @@ import edu.hust.vn.model.rental.Rental;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.payment.PaymentFormHandler;
-import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.screen.return_bike.ReturnScreenHandler;
 import edu.hust.vn.utils.Configs;
 import edu.hust.vn.utils.Utils;
@@ -33,11 +32,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 
 public class BikeScreenHandler extends BaseScreenHandler {
@@ -150,7 +146,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
         licensePlate.textProperty().bind(bike.licensePlateProperty());
         type.setText(bike.typeAsString());
         price.textProperty().bind(Bindings.createStringBinding(() -> bike.priceProperty().get() +Configs.CURRENCY, bike.priceProperty()));
-        deposit.textProperty().bind(Bindings.createStringBinding(() -> Utils.round(bike.priceProperty().get() * 0.4, 2) +Configs.CURRENCY, bike.priceProperty()));
+        deposit.textProperty().bind(Bindings.createStringBinding(() -> DataStore.getInstance().depositCalculatingStrategy.getDeposit(this.bike.getPrice()) +Configs.CURRENCY, bike.priceProperty()));
         if(bike instanceof StandardEBike){
             StandardEBike ebike = (StandardEBike)bike;
             batteryLifeLabel.setVisible(true);
@@ -175,7 +171,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
         rentalFee.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));
         rentalFee.textProperty().bind(Bindings.createStringBinding(
-            ()->String.valueOf(DataStore.getInstance().priceCalculatingStrategy.getPricing((int) currentRental.getTotalTime())),
+            ()->String.valueOf(DataStore.getInstance().rentalFeeCalculatingStrategy.getPricing((int) currentRental.getTotalTime())),
             currentRental.totalTimeProperty()));
 
         rentTime.visibleProperty().bind(Bindings.createBooleanBinding(() -> rentedBikeProp.get() == this.bike, rentedBikeProp));

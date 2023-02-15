@@ -12,6 +12,7 @@ import edu.hust.vn.utils.Configs;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.ObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -55,25 +56,31 @@ public class HomeScreenHandler extends BaseScreenHandler{
 
         ObservableList<Dock> dockList = DataStore.getInstance().dockList;
 
-        try{
-            for(Dock dock : dockList){
-                DockCardHandler dockCardHandler = new DockCardHandler(dock, new EventHandler() {
-                    @Override
-                    public void handle(Event event) {
-                        try {
-                            DockScreenHandler dockScreen = DockScreenHandler.getInstance(dock);
-                            dockScreen.show();
-                        } catch (IOException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                });
-                this.homeItems.add(dockCardHandler);
-                docksView.getChildren().add(dockCardHandler.getContent());
-            }
-        }catch (IOException e){
-            e.printStackTrace();
+        for(Dock dock : dockList){
+            addNewDockCard(dock);
         }
+
+        // sync changes between DataStore dockList and homeItems/docksView
+        dockList.addListener((ListChangeListener.Change<? extends Dock> c) -> {
+            while (c.next()){
+                if(c.wasAdded()){
+                    c.getAddedSubList().forEach(dock -> {
+                        addNewDockCard(dock);
+                    });
+                }
+                if(c.wasRemoved()){
+                    c.getRemoved().forEach(dock -> {
+                        for(DockCardHandler dc : homeItems){
+                            if(dc.getDockID() == dock.getId()){
+                                homeItems.remove(dc);
+                                docksView.getChildren().remove(dc);
+                                break;
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
         ebrImage.setOnMouseClicked(e -> {
             try {
@@ -106,7 +113,7 @@ public class HomeScreenHandler extends BaseScreenHandler{
                 }
                 return;
             }
-            ArrayList<Dock> res = ((HomeController)this.getBaseController()).searchDockList(newValue);
+            ArrayList<Dock> res = this.getBaseController().searchDockList(dockList, newValue);
 //            System.out.println(res);
             docksView.getChildren().clear();
             for(DockCardHandler dc : homeItems){
@@ -121,6 +128,26 @@ public class HomeScreenHandler extends BaseScreenHandler{
                 dc.setShow(inRes);
             }
         });
+    }
+
+    private void addNewDockCard(Dock dock) {
+        try{
+            DockCardHandler dockCardHandler = new DockCardHandler(dock, new EventHandler() {
+                @Override
+                public void handle(Event event) {
+                    try {
+                        DockScreenHandler dockScreen = DockScreenHandler.getInstance(dock);
+                        dockScreen.show();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+            this.homeItems.add(dockCardHandler);
+            this.docksView.getChildren().add(dockCardHandler.getContent());
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     public static HomeScreenHandler getInstance() throws IOException {
