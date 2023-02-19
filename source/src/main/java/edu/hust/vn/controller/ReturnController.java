@@ -8,6 +8,7 @@ import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoExcep
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
+import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.model.rental.Rental;
 
 import java.sql.SQLException;
@@ -15,8 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class ReturnController extends BaseController implements PaymentInfoReceiverController{
-    private HashMap<String, String> paymentInfo = new HashMap<>();
+public class ReturnController extends BaseController{
+    private PaymentMethod paymentMethod;
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
 
     public Lock validateBarCode(Dock dock, String barCode) throws
         InvalidBarcodeException, BarCodeNotFoundException, LockNotFreeException, IllegalArgumentException {
@@ -31,21 +40,6 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
             throw new LockNotFreeException(lock.getBarCode());
         }
         return lock;
-    }
-
-    @Override
-    public Map<String, String> getPaymentInfo() {
-        return paymentInfo;
-    }
-
-    @Override
-    public void setPaymentInfo(String key, String value) {
-        paymentInfo.put(key, value);
-    }
-
-    @Override
-    public void validatePaymentInfo() throws InvalidPaymentInfoException {
-        DataStore.getInstance().paymentInfoValidationStrategy.validate(this.paymentInfo);
     }
 
     public void attachBikeToLock(Lock lock) throws SQLException {
@@ -64,7 +58,7 @@ public class ReturnController extends BaseController implements PaymentInfoRecei
         int deposit = DataStore.getInstance().depositCalculatingStrategy.getDeposit(rentedBike.getPrice());
         int rentalFee = DataStore.getInstance().rentalFeeCalculatingStrategy.getPricing((int)currentRental.getTotalTime());
         int amount = rentalFee - deposit;
-        PaymentController paymentController = new PaymentController(paymentInfo);
+        PaymentController paymentController = new PaymentController(paymentMethod.getPaymentEntity());
         if(amount >= 0){
             paymentController.payRental(amount);
         }else{

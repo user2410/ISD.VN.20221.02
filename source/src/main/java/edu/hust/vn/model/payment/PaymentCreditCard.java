@@ -1,19 +1,31 @@
-package edu.hust.vn.controller.strategy.paymentinfo_validation;
+package edu.hust.vn.model.payment;
 
 import edu.hust.vn.common.exception.invalid_payment_info.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.util.HashMap;
+import java.util.Map;
 
-public class CardValidationStrategy implements PaymentInfoValidationStrategy{
+public class PaymentCreditCard extends PaymentMethod{
+
     @Override
-    public void validate(HashMap<String, String> info) throws InvalidPaymentInfoException {
-        validateCardOwner(info.get("cardOwner"));
-        validateCardNumber(info.get("cardNumber"));
-        validateExpDate(info.get("expDate"));
-        validateSecurityCode(info.get("cvvCode"));
+    public void createPaymentEntity(Map<String, String> info) throws InvalidPaymentInfoException {
+        String cardOwner = info.get("cardOwner");
+        String cardCode = info.get("cardCode");
+        String expDate = info.get("expDate");
+        String cvvCode = info.get("cvvCode");
+
+        validateCardOwner(cardOwner);
+        validateCardNumber(cardCode);
+        validateExpDate(expDate);
+        validateSecurityCode(cvvCode);
+
+        CreditCard card = new CreditCard();
+        card.setOwner(cardOwner);
+        card.setCardCode(cardCode);
+        card.setExpDate(expDate);
+        card.setCvvCode(cvvCode);
+        paymentEntity = card;
     }
 
     /**
@@ -21,7 +33,7 @@ public class CardValidationStrategy implements PaymentInfoValidationStrategy{
      *
      * @param cardNumber string of card number
      */
-    public static void validateCardNumber(String cardNumber) throws InvalidPaymentInfoException {
+    private static void validateCardNumber(String cardNumber) throws InvalidPaymentInfoException {
         // check card number is not empty
         if (cardNumber == null || cardNumber.isBlank())
             throw new NullCardNumberException();
@@ -35,7 +47,7 @@ public class CardValidationStrategy implements PaymentInfoValidationStrategy{
      *
      * @param cardOwner string of card owner
      */
-    public static void validateCardOwner(String cardOwner) throws InvalidPaymentInfoException {
+    private static void validateCardOwner(String cardOwner) throws InvalidPaymentInfoException {
         // check card owner is not empty
         if (cardOwner == null|| cardOwner.isBlank()) throw new NullCardOwnerException();
         if (cardOwner.length() == 0 || !cardOwner.matches("[0-9a-zA-Z ]+")) throw new InvalidCardOwnerFormatException(cardOwner);
@@ -46,7 +58,7 @@ public class CardValidationStrategy implements PaymentInfoValidationStrategy{
      *
      * @param securityCode string of security code
      */
-    public static void validateSecurityCode(String securityCode) throws InvalidPaymentInfoException {
+    private static void validateSecurityCode(String securityCode) throws InvalidPaymentInfoException {
         // check security code is not empty
         if (securityCode == null|| securityCode.isBlank()) throw new NullSecurityCodeException();
 
@@ -57,11 +69,11 @@ public class CardValidationStrategy implements PaymentInfoValidationStrategy{
     }
 
     /**
-     * validate expiration date has correct format MMyy and not yet reached
+     * validate expiration date has correct format dd/MM/yyyy
      *
      * @param expDate string of expiration date
      */
-    public static void validateExpDate(String expDate) throws InvalidPaymentInfoException  {
+    private static void validateExpDate(String expDate) throws InvalidPaymentInfoException  {
         // check expire date is not empty
         if (expDate == null || expDate.isBlank()) throw new NullExpDateException();
 

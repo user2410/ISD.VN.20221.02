@@ -55,17 +55,32 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="24.800024414062506" minHeight="10.0" prefHeight="17.600012207031256" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="43.199987792968756" minHeight="10.0" prefHeight="34.2000244140625" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="40.800024414062506" minHeight="10.0" prefHeight="30.19997558593751" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="40.800024414062506" minHeight="10.0" prefHeight="40.800024414062506" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <Label text="License plate" />
                         <Label text="Bike type" GridPane.rowIndex="1" />
-                        <Label text="Rental fee" GridPane.rowIndex="2" />
+                        <Label text="Rental fee" GridPane.rowIndex="4" />
                         <Label fx:id="bikeLicensePlate" text="Label" GridPane.columnIndex="1" />
                         <Label fx:id="bikeType" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                         <Label fx:id="bikeRentalFee" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label prefHeight="15.0" prefWidth="93.0" text="Total time" GridPane.rowIndex="3" />
-                        <Label fx:id="bikeTotalTime" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label prefHeight="15.0" prefWidth="93.0" text="Total time" GridPane.rowIndex="2" />
+                        <Label fx:id="bikeTotalTime" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Deposit" GridPane.rowIndex="5" />
+                        <Label fx:id="bikeDeposit" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label fx:id="subTotalLabel" text="Label" GridPane.rowIndex="6">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
+                        <Label fx:id="subTotal" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                           <font>
+                              <Font size="24.0" />
+                           </font>
+                        </Label>
                      </children>
                      <VBox.margin>
                         <Insets left="20.0" right="20.0" />

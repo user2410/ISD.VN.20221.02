@@ -1,10 +1,7 @@
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
-import edu.hust.vn.controller.PaymentInfoReceiverController;
-import edu.hust.vn.controller.RentBikeController;
 import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
 import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 

@@ -5,19 +5,16 @@ import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoExcep
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.invoice.Invoice;
+import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.model.rental.Rental;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class RentBikeController extends BaseController implements PaymentInfoReceiverController{
+public class RentBikeController extends BaseController{
     private Bike selectedBike;
     private Lock currentLock;
-    private HashMap<String, String> paymentInfo = new HashMap<>();
-
-    public RentBikeController(){
-        this.paymentInfo = new HashMap<>();
-    }
+    private PaymentMethod paymentMethod;
 
     public Invoice createInvoice(){
         Invoice invoice = new Invoice();
@@ -44,23 +41,16 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
         this.currentLock = currentLock;
     }
 
-    @Override
-    public Map<String, String> getPaymentInfo() {
-        return paymentInfo;
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
     }
 
-    @Override
-    public void setPaymentInfo(String key, String value) {
-        paymentInfo.put(key, value);
-    }
-
-    @Override
-    public void validatePaymentInfo() throws InvalidPaymentInfoException {
-        DataStore.getInstance().paymentInfoValidationStrategy.validate(this.paymentInfo);
+    public void setPaymentMethod(PaymentMethod paymentMethod){
+        this.paymentMethod = paymentMethod;
     }
     
     public void rentBike() throws Exception{
-        PaymentController paymentController = new PaymentController(paymentInfo);
+        PaymentController paymentController = new PaymentController(paymentMethod.getPaymentEntity());
         int deposit = DataStore.getInstance().depositCalculatingStrategy.getDeposit(this.selectedBike.getPrice());
         paymentController.payDeposit(deposit);
         // remove bike from lock from

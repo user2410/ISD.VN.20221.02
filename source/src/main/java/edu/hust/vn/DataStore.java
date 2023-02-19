@@ -2,8 +2,6 @@ package edu.hust.vn;
 
 import edu.hust.vn.controller.strategy.deposit_calculator.DepositCalculatingStrategy;
 import edu.hust.vn.controller.strategy.deposit_calculator.DepositCalculator1;
-import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
-import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
 import edu.hust.vn.controller.strategy.pricing.IPricing;
 import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.db.EBRDB;
@@ -41,7 +39,6 @@ public class DataStore {
 
     public Map<String, Image> bikeImages;
 
-    public PaymentInfoValidationStrategy paymentInfoValidationStrategy;
     public DepositCalculatingStrategy depositCalculatingStrategy;
     public IPricing rentalFeeCalculatingStrategy;
 
@@ -57,7 +54,6 @@ public class DataStore {
 
             currentRental = new Rental();
 
-            paymentInfoValidationStrategy = new CardValidationStrategy();
             depositCalculatingStrategy = new DepositCalculator1();
             rentalFeeCalculatingStrategy = new Pricing();
         } catch (Exception e) {
