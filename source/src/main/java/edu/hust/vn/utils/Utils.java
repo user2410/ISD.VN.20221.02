@@ -2,8 +2,14 @@ package edu.hust.vn.utils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class Utils {
@@ -27,5 +33,17 @@ public class Utils {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
+    }
+
+    public static Timestamp stringToTimestamp(String dateString, String format){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(format);
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        LocalDateTime dateTime = date.atStartOfDay();
+        return localDateTimeToTimeStamp(dateTime);
+    }
+
+    public static Timestamp localDateTimeToTimeStamp(LocalDateTime time){
+        ZonedDateTime zonedDateTime = time.atZone(ZoneOffset.UTC);
+        return Timestamp.from(zonedDateTime.toInstant());
     }
 }

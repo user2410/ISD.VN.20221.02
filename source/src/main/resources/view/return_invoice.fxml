@@ -66,9 +66,9 @@
                         <Label text="Rental fee" GridPane.rowIndex="4" />
                         <Label fx:id="bikeLicensePlate" text="Label" GridPane.columnIndex="1" />
                         <Label fx:id="bikeType" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label fx:id="bikeRentalFee" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="bikeRentalFee" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                         <Label prefHeight="15.0" prefWidth="93.0" text="Total time" GridPane.rowIndex="2" />
-                        <Label fx:id="bikeTotalTime" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label fx:id="bikeTotalTime" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label text="Deposit" GridPane.rowIndex="5" />
                         <Label fx:id="bikeDeposit" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <Label fx:id="subTotalLabel" text="Label" GridPane.rowIndex="6">

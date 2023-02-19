@@ -8,6 +8,7 @@ import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoExcep
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
+import edu.hust.vn.model.invoice.Invoice;
 import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.model.rental.Rental;
 
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ReturnController extends BaseController{
+    private Lock lock;
     private PaymentMethod paymentMethod;
 
     public PaymentMethod getPaymentMethod() {
@@ -44,7 +46,8 @@ public class ReturnController extends BaseController{
 
     public void attachBikeToLock(Lock lock) throws SQLException {
         Bike rentedBike = DataStore.getInstance().currentRental.getBike();
-        // put the bike back to the selected dock
+        this.lock = lock;
+        // put the bike back to the selected dock in
         // - local
         lock.setBike(rentedBike);
         rentedBike.setLock(lock);
@@ -52,9 +55,11 @@ public class ReturnController extends BaseController{
         DataStore.getInstance().lockDAO.attachBike(lock.getId(), rentedBike.getId());
     }
 
-    public void returnBike(){
+    public void returnBike() throws Exception {
         Rental currentRental = DataStore.getInstance().currentRental;
         Bike rentedBike = currentRental.getBike();
+
+        // execute transaction
         int deposit = DataStore.getInstance().depositCalculatingStrategy.getDeposit(rentedBike.getPrice());
         int rentalFee = DataStore.getInstance().rentalFeeCalculatingStrategy.getPricing((int)currentRental.getTotalTime());
         int amount = rentalFee - deposit;
@@ -64,8 +69,18 @@ public class ReturnController extends BaseController{
         }else{
             paymentController.refund(-amount);
         }
+
+        // save the return to database
+        int returnId = DataStore.getInstance().rentalDAO.saveReturn(currentRental.getId(), lock.getDockId(), lock.getId(), currentRental.getEndTime());
+
+        // save invoice to database
+        Invoice invoice = new Invoice();
+        invoice.setRental(currentRental);
+        invoice.setAmount(amount);
+        invoice.setType(Invoice.TYPE.RETURN);
+        DataStore.getInstance().invoiceDAO.saveInvoice(invoice);
+
         // clear current rental
         currentRental.clear();
-
     }
 }

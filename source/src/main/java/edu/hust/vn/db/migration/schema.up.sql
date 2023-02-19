@@ -47,7 +47,6 @@ CREATE TABLE "Rental" (
   "bikeId" bigint NOT NULL,
   "rentDockId" bigint NOT NULL,
   "rentLockId" bigint NOT NULL,
-  "deposit" bigint NOT NULL,
   "startTime" timestamptz NOT NULL
 );
 
@@ -73,7 +72,7 @@ CREATE TABLE "PaymentTransaction" (
   "method" varchar NOT NULL DEFAULT 'credit card',
   "cardId" integer NOT NULL,
   "invoiceId" integer NOT NULL,
-  "created_at" timestamptz NOT NULL DEFAULT (now())
+  "createdAt" timestamptz NOT NULL DEFAULT (now())
 );
 
 CREATE TABLE "Card" (

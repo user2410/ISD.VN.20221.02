@@ -10,7 +10,9 @@ import edu.hust.vn.model.bike.BikeDAO;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.DockDAO;
 import edu.hust.vn.model.dock.LockDAO;
+import edu.hust.vn.model.invoice.InvoiceDAO;
 import edu.hust.vn.model.rental.Rental;
+import edu.hust.vn.model.rental.RentalDAO;
 import edu.hust.vn.subsystem.InterbankSubsystem;
 import edu.hust.vn.utils.Configs;
 import javafx.collections.FXCollections;
@@ -32,6 +34,8 @@ public class DataStore {
     public LockDAO lockDAO;
     public DockDAO dockDAO;
     public BikeDAO bikeDAO;
+    public RentalDAO rentalDAO;
+    public InvoiceDAO invoiceDAO;
 
     public ObservableList<Dock> dockList;
     public ObservableList<Bike> bikeList;
@@ -51,6 +55,8 @@ public class DataStore {
             dockDAO = new DockDAO(dbConn);
             lockDAO = new LockDAO(dbConn);
             bikeDAO = new BikeDAO(dbConn);
+            rentalDAO = new RentalDAO(dbConn);
+            invoiceDAO = new InvoiceDAO(dbConn);
 
             currentRental = new Rental();
 

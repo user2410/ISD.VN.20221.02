@@ -19,6 +19,16 @@ public class Rental {
         clear();
     }
 
+    public void assign(Rental rental){
+        this.id = rental.id;
+        this.lock = rental.lock;
+        this.setBike(rental.getBike());
+        this.startTime.set(rental.getStartTime());
+        this.totalTime.set(rental.getTotalTime());
+        this.endTime.set(rental.getEndTime());
+        this.active.set(rental.isActive());
+    }
+
     public int getId() {
         return id;
     }
@@ -104,10 +114,7 @@ public class Rental {
         active.set(false);
     }
 
-    public void startRenting(Lock lock, Bike bike){
-        this.lock = lock;
-        this.bike.set(bike);
-        startTime.set(LocalDateTime.now());
+    public void startRenting(){
         totalTime.set(0);
         active.set(true);
     }

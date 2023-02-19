@@ -105,6 +105,7 @@ public class RentalInvoiceScreenHandler extends BaseScreenHandler {
             HomeScreenHandler.getInstance().show();
             MessagePopup.getInstance().show("Rental success", false);
         }catch (Exception e){
+            e.printStackTrace();
             try {
                 MessagePopup.getInstance().show("Rental failed: "+e.getMessage(), false);
             } catch (IOException ex) {

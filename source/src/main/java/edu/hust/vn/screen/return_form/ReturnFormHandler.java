@@ -108,9 +108,9 @@ public class ReturnFormHandler extends BaseScreenHandler {
 
                 HomeScreenHandler.getInstance().show();
                 MessagePopup.getInstance().show("Return success", false);
-            } catch (InvalidPaymentInfoException | IOException ex) {
+            } catch (Exception ex) {
                 try {
-                    MessagePopup.getInstance().show(ex.getMessage(), true);
+                    MessagePopup.getInstance().show("Return failed: " + ex.getMessage(), true);
                 } catch (IOException exc) {
                     throw new RuntimeException(exc);
                 }
