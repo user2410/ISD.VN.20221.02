@@ -6,6 +6,9 @@ import edu.hust.vn.controller.RentBikeController;
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.bike.StandardBike;
 import edu.hust.vn.model.invoice.Invoice;
+import edu.hust.vn.model.payment.CreditCard;
+import edu.hust.vn.model.payment.PaymentEntity;
+import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
@@ -66,11 +69,14 @@ public class RentalInvoiceScreenHandler extends BaseScreenHandler {
         bikeType.setText(bike.typeAsString());
         bikeDeposit.setText(DataStore.getInstance().depositCalculatingStrategy.getDeposit(bike.getPrice()) + Configs.CURRENCY);
 
-        Map<String, String> paymentInfo = ctl.getPaymentInfo();
-        cardNumber.setText(paymentInfo.get("cardNumber"));
-        cardOwner.setText(paymentInfo.get("cardOwner"));
-        cardExpDate.setText(paymentInfo.get("expDate"));
-        cardCvv.setText(paymentInfo.get("cvvCode"));
+        PaymentEntity paymentEntity = getBaseController().getPaymentMethod().getPaymentEntity();
+        if(paymentEntity instanceof  CreditCard){
+            CreditCard card = (CreditCard) getBaseController().getPaymentMethod().getPaymentEntity();
+            cardNumber.setText(card.getCardCode());
+            cardOwner.setText(card.getOwner());
+            cardExpDate.setText(card.getExpDate());
+            cardCvv.setText(card.getCvvCode());
+        }
 
         cancelBtn.setOnMouseClicked(e -> {
             try {
@@ -99,11 +105,17 @@ public class RentalInvoiceScreenHandler extends BaseScreenHandler {
             HomeScreenHandler.getInstance().show();
             MessagePopup.getInstance().show("Rental success", false);
         }catch (Exception e){
+            e.printStackTrace();
             try {
                 MessagePopup.getInstance().show("Rental failed: "+e.getMessage(), false);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public RentBikeController getBaseController(){
+        return (RentBikeController)super.getBaseController();
     }
 }

@@ -1,8 +1,9 @@
 package edu.hust.vn.screen.payment;
 
 import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoException;
-import edu.hust.vn.controller.PaymentInfoReceiverController;
+import edu.hust.vn.controller.BaseController;
 import edu.hust.vn.controller.RentBikeController;
+import edu.hust.vn.model.payment.PaymentCreditCard;
 import edu.hust.vn.screen.BaseScreenHandler;
 import edu.hust.vn.screen.invoice.RentalInvoiceScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
@@ -12,6 +13,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PaymentFormHandler extends BaseScreenHandler {
 
@@ -43,15 +46,17 @@ public class PaymentFormHandler extends BaseScreenHandler {
         });
 
         confirmBtn.setOnMouseClicked(e->{
-            PaymentInfoReceiverController ctl = (PaymentInfoReceiverController) getBaseController();
-            ctl.setPaymentInfo("cardOwner", cardOwner.getText());
-            ctl.setPaymentInfo("cardNumber", cardNumber.getText());
-            ctl.setPaymentInfo("expDate", expDate.getText());
-            ctl.setPaymentInfo("cvvCode", cardCvv.getText());
+            Map<String, String> paymentInfo = new HashMap<>();
+            paymentInfo.put("cardOwner", cardOwner.getText().trim());
+            paymentInfo.put("cardCode", cardNumber.getText().trim());
+            paymentInfo.put("expDate", expDate.getText().trim());
+            paymentInfo.put("cvvCode", cardCvv.getText().trim());
 
             try{
-                ctl.validatePaymentInfo();
-                RentalInvoiceScreenHandler rentalInvoiceScreen = new RentalInvoiceScreenHandler((RentBikeController) ctl);
+                PaymentCreditCard paymentCreditCard = new PaymentCreditCard();
+                paymentCreditCard.createPaymentEntity(paymentInfo);
+                getBaseController().setPaymentMethod(paymentCreditCard);
+                RentalInvoiceScreenHandler rentalInvoiceScreen = new RentalInvoiceScreenHandler(getBaseController());
                 rentalInvoiceScreen.setPrevScreenHandler(this);
                 rentalInvoiceScreen.show();
             }catch ( InvalidPaymentInfoException | IOException ex){
@@ -66,5 +71,10 @@ public class PaymentFormHandler extends BaseScreenHandler {
 
     @Override
     public void onShow() {
+    }
+
+    @Override
+    public RentBikeController getBaseController(){
+        return (RentBikeController)super.getBaseController();
     }
 }

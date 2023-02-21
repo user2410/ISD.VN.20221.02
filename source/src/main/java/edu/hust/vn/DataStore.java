@@ -2,8 +2,6 @@ package edu.hust.vn;
 
 import edu.hust.vn.controller.strategy.deposit_calculator.DepositCalculatingStrategy;
 import edu.hust.vn.controller.strategy.deposit_calculator.DepositCalculator1;
-import edu.hust.vn.controller.strategy.paymentinfo_validation.CardValidationStrategy;
-import edu.hust.vn.controller.strategy.paymentinfo_validation.PaymentInfoValidationStrategy;
 import edu.hust.vn.controller.strategy.pricing.IPricing;
 import edu.hust.vn.controller.strategy.pricing.Pricing;
 import edu.hust.vn.db.EBRDB;
@@ -12,7 +10,9 @@ import edu.hust.vn.model.bike.BikeDAO;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.DockDAO;
 import edu.hust.vn.model.dock.LockDAO;
+import edu.hust.vn.model.invoice.InvoiceDAO;
 import edu.hust.vn.model.rental.Rental;
+import edu.hust.vn.model.rental.RentalDAO;
 import edu.hust.vn.subsystem.InterbankSubsystem;
 import edu.hust.vn.utils.Configs;
 import javafx.collections.FXCollections;
@@ -34,6 +34,8 @@ public class DataStore {
     public LockDAO lockDAO;
     public DockDAO dockDAO;
     public BikeDAO bikeDAO;
+    public RentalDAO rentalDAO;
+    public InvoiceDAO invoiceDAO;
 
     public ObservableList<Dock> dockList;
     public ObservableList<Bike> bikeList;
@@ -41,7 +43,6 @@ public class DataStore {
 
     public Map<String, Image> bikeImages;
 
-    public PaymentInfoValidationStrategy paymentInfoValidationStrategy;
     public DepositCalculatingStrategy depositCalculatingStrategy;
     public IPricing rentalFeeCalculatingStrategy;
 
@@ -54,10 +55,11 @@ public class DataStore {
             dockDAO = new DockDAO(dbConn);
             lockDAO = new LockDAO(dbConn);
             bikeDAO = new BikeDAO(dbConn);
+            rentalDAO = new RentalDAO(dbConn);
+            invoiceDAO = new InvoiceDAO(dbConn);
 
             currentRental = new Rental();
 
-            paymentInfoValidationStrategy = new CardValidationStrategy();
             depositCalculatingStrategy = new DepositCalculator1();
             rentalFeeCalculatingStrategy = new Pricing();
         } catch (Exception e) {

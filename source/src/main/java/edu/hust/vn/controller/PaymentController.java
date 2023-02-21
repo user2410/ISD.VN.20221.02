@@ -2,6 +2,8 @@ package edu.hust.vn.controller;
 
 import edu.hust.vn.DataStore;
 import edu.hust.vn.model.payment.CreditCard;
+import edu.hust.vn.model.payment.PaymentEntity;
+import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.subsystem.InterbankInterface;
 import edu.hust.vn.subsystem.InterbankSubsystem;
 
@@ -10,14 +12,10 @@ import java.util.Map;
 
 public class PaymentController extends BaseController{
 
-    private CreditCard creditCard;
+    private PaymentEntity paymentEntity;
 
-    public PaymentController(Map<String, String> paymentInfo){
-        creditCard = new CreditCard();
-        creditCard.setOwner(paymentInfo.get("cardOwner"));
-        creditCard.setCardCode(paymentInfo.get("cardNumber"));
-        creditCard.setExpDate(paymentInfo.get("expDate"));
-        creditCard.setCvvCode(Integer.parseInt(paymentInfo.get("cvvCode")));
+    public PaymentController(PaymentEntity paymentEntity){
+        this.paymentEntity = paymentEntity;
     }
 
     public void payRental(int amount) throws RuntimeException{

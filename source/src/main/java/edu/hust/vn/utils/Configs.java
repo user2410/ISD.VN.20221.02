@@ -17,11 +17,11 @@ public class Configs {
     public static final String PAYMENT_FORM_PATH = "/view/payment_form.fxml";
     public static final String RENTAL_INVOICE_SCREEN_PATH = "/view/rental_invoice.fxml";
     public static final String RETURN_SCREEN_PATH = "/view/return.fxml";
+    public static final String RETURN_INVOICE_SCREEN_PATH = "/view/return_invoice.fxml";
 
     public static final String POPUP_MSG_SCREEN_PATH = "/view/message_popup.fxml";
 
 
     public static final String PROCESS_TRANSACTION_URL = "";
-    public static final String INVOICE_SCREEN_PATH = "/view/invoice.fxml";
 
 }

@@ -1,21 +1,10 @@
 package edu.hust.vn.model.payment;
 
-public class CreditCard {
+public class CreditCard implements PaymentEntity{
     private String cardCode;
     private String owner;
-    private int cvvCode;
+    private String cvvCode;
     private String expDate;
-
-    public CreditCard(String cardCode, String owner, int cvvCode, String expDate) {
-        this.cardCode = cardCode;
-        this.owner = owner;
-        this.cvvCode = cvvCode;
-        this.expDate = expDate;
-    }
-
-    public CreditCard() {
-
-    }
 
     public String getCardCode() {
         return cardCode;
@@ -33,11 +22,11 @@ public class CreditCard {
         this.owner = owner;
     }
 
-    public int getCvvCode() {
+    public String getCvvCode() {
         return cvvCode;
     }
 
-    public void setCvvCode(int cvvCode) {
+    public void setCvvCode(String cvvCode) {
         this.cvvCode = cvvCode;
     }
 

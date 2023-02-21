@@ -5,28 +5,17 @@ import edu.hust.vn.common.exception.invalid_payment_info.InvalidPaymentInfoExcep
 import edu.hust.vn.model.bike.Bike;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.invoice.Invoice;
+import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.model.rental.Rental;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RentBikeController extends BaseController implements PaymentInfoReceiverController{
+public class RentBikeController extends BaseController{
     private Bike selectedBike;
     private Lock currentLock;
-    private HashMap<String, String> paymentInfo = new HashMap<>();
-
-    public RentBikeController(){
-        this.paymentInfo = new HashMap<>();
-    }
-
-    public Invoice createInvoice(){
-        Invoice invoice = new Invoice();
-        Rental rental = new Rental();
-        rental.setBike(this.selectedBike);
-        rental.setLock(this.currentLock);
-        invoice.setAmount(DataStore.getInstance().depositCalculatingStrategy.getDeposit(this.selectedBike.getPrice()));
-        return invoice;
-    }
+    private PaymentMethod paymentMethod;
 
     public Bike getSelectedBike() {
         return selectedBike;
@@ -44,25 +33,36 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
         this.currentLock = currentLock;
     }
 
-    @Override
-    public Map<String, String> getPaymentInfo() {
-        return paymentInfo;
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
     }
 
-    @Override
-    public void setPaymentInfo(String key, String value) {
-        paymentInfo.put(key, value);
-    }
-
-    @Override
-    public void validatePaymentInfo() throws InvalidPaymentInfoException {
-        DataStore.getInstance().paymentInfoValidationStrategy.validate(this.paymentInfo);
+    public void setPaymentMethod(PaymentMethod paymentMethod){
+        this.paymentMethod = paymentMethod;
     }
     
     public void rentBike() throws Exception{
-        PaymentController paymentController = new PaymentController(paymentInfo);
+        // set current rental instance
+        Rental rental = new Rental();
+        rental.setLock(currentLock);
+        rental.setBike(selectedBike);
+        rental.setStartTime(LocalDateTime.now());
+
+        // execute transaction
+        PaymentController paymentController = new PaymentController(paymentMethod.getPaymentEntity());
         int deposit = DataStore.getInstance().depositCalculatingStrategy.getDeposit(this.selectedBike.getPrice());
         paymentController.payDeposit(deposit);
+
+        // save rental session to database
+        rental.setId(DataStore.getInstance().rentalDAO.saveRental(rental));
+
+        // save invoice to database
+        Invoice invoice = new Invoice();
+        invoice.setRental(rental);
+        invoice.setAmount(DataStore.getInstance().depositCalculatingStrategy.getDeposit(this.selectedBike.getPrice()));
+        invoice.setType(Invoice.TYPE.RENTAL);
+        DataStore.getInstance().invoiceDAO.saveInvoice(invoice);
+
         // remove bike from lock from
         // - local instance
         currentLock.setBike(null);
@@ -70,8 +70,8 @@ public class RentBikeController extends BaseController implements PaymentInfoRec
         // - database
         DataStore.getInstance().lockDAO.takeBike(currentLock.getId());
 
-        // set current rental instance
-        Rental rental = DataStore.getInstance().currentRental;
-        rental.startRenting(currentLock, selectedBike);
+        // start rental session at this point
+        rental.startRenting();
+        DataStore.getInstance().currentRental.assign(rental);
     }
 }
