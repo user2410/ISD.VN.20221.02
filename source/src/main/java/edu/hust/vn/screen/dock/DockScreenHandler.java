@@ -5,17 +5,14 @@ import edu.hust.vn.common.exception.BikeNotAvailableException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.controller.ViewDockController;
 import edu.hust.vn.model.bike.Bike;
-import edu.hust.vn.model.bike.StandardBike;
-import edu.hust.vn.model.bike.StandardEBike;
-import edu.hust.vn.model.bike.TwinBike;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.screen.BaseScreenHandler;
+import edu.hust.vn.screen.bike.BikeScreenFactory;
 import edu.hust.vn.screen.bike.BikeScreenHandler;
 import edu.hust.vn.screen.home.HomeScreenHandler;
 import edu.hust.vn.screen.popup.MessagePopup;
 import edu.hust.vn.utils.Configs;
-import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
@@ -25,8 +22,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class DockScreenHandler extends BaseScreenHandler {
 
