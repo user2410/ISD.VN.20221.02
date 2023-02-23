@@ -1,6 +1,5 @@
 package edu.hust.vn;
 
-import edu.hust.vn.db.Seed;
 import edu.hust.vn.screen.SplashScreenHandler;
 import edu.hust.vn.utils.Configs;
 import javafx.application.Application;
