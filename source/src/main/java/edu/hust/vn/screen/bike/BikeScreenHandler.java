@@ -51,16 +51,16 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private Label type;
 
     @FXML
-    private Label batteryLifeLabel;
+    protected Label batteryLifeLabel;
 
     @FXML
-    private Label batteryLife;
+    protected Label batteryLife;
 
     @FXML
-    private Label batteryPercentageLabel;
+    protected Label batteryPercentageLabel;
 
     @FXML
-    private Label batteryPercentage;
+    protected Label batteryPercentage;
 
     @FXML
     private Label price;
@@ -87,7 +87,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
     private Label nSaddles;
 
     @FXML
-    private Label nRearSeats;
+    protected Label nRearSeats;
 
     @FXML
     private HBox timeCtl;
@@ -97,7 +97,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
 
     private static ObservableMap<Bike, BikeScreenHandler> bikeScreens = FXCollections.observableHashMap();
 
-    private Bike bike;
+    protected Bike bike;
 
     private static final Image pauseImage;
     private static final Image resumeImage;
@@ -124,7 +124,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
         timeline.play();
     }
 
-    private BikeScreenHandler(Bike bike) throws IOException {
+    protected BikeScreenHandler(Bike bike) throws IOException {
         super(Configs.BIKE_SCREEN_PATH);
         this.bike = bike;
 
@@ -147,22 +147,10 @@ public class BikeScreenHandler extends BaseScreenHandler {
         type.setText(bike.typeAsString());
         price.textProperty().bind(Bindings.createStringBinding(() -> bike.priceProperty().get() +Configs.CURRENCY, bike.priceProperty()));
         deposit.textProperty().bind(Bindings.createStringBinding(() -> DataStore.getInstance().depositCalculatingStrategy.getDeposit(this.bike.getPrice()) +Configs.CURRENCY, bike.priceProperty()));
-        if(bike instanceof StandardEBike){
-            StandardEBike ebike = (StandardEBike)bike;
-            batteryLifeLabel.setVisible(true);
-            batteryPercentageLabel.setVisible(true);
-            batteryLife.textProperty().bind(ebike.batteryLifeProperty().asString());
-            batteryPercentage.textProperty().bind(Bindings.createStringBinding(() -> Utils.round(ebike.remainingBatteryLifeProperty().get() / ebike.batteryLifeProperty().get() * 100.0, 2) +" %",
-                ebike.batteryLifeProperty(), ebike.remainingBatteryLifeProperty()));
-        }else{
-            batteryLifeLabel.setVisible(false);
-            batteryPercentageLabel.setVisible(false);
-        }
+        batteryLifeLabel.setVisible(false);
+        batteryPercentageLabel.setVisible(false);
         nSaddles.setText(String.valueOf(bike.getnSaddles()));
         nPedals.setText(String.valueOf(bike.getnPedals()));
-        if(bike instanceof TwinBike){
-            nRearSeats.setText(String.valueOf(((TwinBike)bike).getnRearSeats()));
-        }
 
         Rental currentRental = DataStore.getInstance().currentRental;
         ObjectProperty<Bike> rentedBikeProp = currentRental.bikeProperty();
@@ -206,7 +194,7 @@ public class BikeScreenHandler extends BaseScreenHandler {
         if(!bikeScreens.containsKey(bike)){
             synchronized (BikeScreenHandler.class){
                 if(!bikeScreens.containsKey(bike)){
-                    bikeScreens.put(bike, new BikeScreenHandler(bike));
+                    bikeScreens.put(bike, BikeScreenFactory.initialize(bike));
                 }
             }
         }
