@@ -2,17 +2,17 @@ package edu.hust.vn.model.payment;
 
 public class PaymentTransaction {
     private String errorCode;
-    private CreditCard card;
+    private PaymentEntity paymentEntity;
     private String transactionId;
     private String transactionContent;
     private int amount;
     private String createdAt;
 
-    public PaymentTransaction(String errorCode, CreditCard card, String transactionId, String transactionContent,
+    public PaymentTransaction(String errorCode, PaymentEntity entity, String transactionId, String transactionContent,
                               int amount, String createdAt) {
         super();
         this.errorCode = errorCode;
-        this.card = card;
+        this.paymentEntity = entity;
         this.transactionId = transactionId;
         this.transactionContent = transactionContent;
         this.amount = amount;
