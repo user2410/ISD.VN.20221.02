@@ -5,13 +5,14 @@ import edu.hust.vn.common.exception.BikeNotAvailableException;
 import edu.hust.vn.common.exception.InvalidBarcodeException;
 import edu.hust.vn.model.dock.Dock;
 import edu.hust.vn.model.dock.Lock;
+import edu.hust.vn.utils.Utils;
 
 import java.util.UUID;
 
 public class ViewDockController extends BaseController{
     public Lock validateBarCode(Dock dock, String barCode) throws
-        InvalidBarcodeException, BarCodeNotFoundException, BikeNotAvailableException, IllegalArgumentException {
-        if(!UUID.fromString(barCode).toString().equals(barCode)){
+        InvalidBarcodeException, BarCodeNotFoundException, BikeNotAvailableException {
+        if(!Utils.validateBarcode(barCode)){
             throw new InvalidBarcodeException();
         }
         Lock lock = dock.getLockByBarCode(barCode);

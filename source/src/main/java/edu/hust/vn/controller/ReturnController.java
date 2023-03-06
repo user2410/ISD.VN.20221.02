@@ -11,6 +11,7 @@ import edu.hust.vn.model.dock.Lock;
 import edu.hust.vn.model.invoice.Invoice;
 import edu.hust.vn.model.payment.PaymentMethod;
 import edu.hust.vn.model.rental.Rental;
+import edu.hust.vn.utils.Utils;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -30,8 +31,8 @@ public class ReturnController extends BaseController{
     }
 
     public Lock validateBarCode(Dock dock, String barCode) throws
-        InvalidBarcodeException, BarCodeNotFoundException, LockNotFreeException, IllegalArgumentException {
-        if(!UUID.fromString(barCode).toString().equals(barCode)){
+        InvalidBarcodeException, BarCodeNotFoundException, LockNotFreeException {
+        if(!Utils.validateBarcode(barCode)){
             throw new InvalidBarcodeException();
         }
         Lock lock = dock.getLockByBarCode(barCode);

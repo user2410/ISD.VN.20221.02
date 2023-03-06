@@ -36,7 +36,7 @@ CREATE TABLE "Dock" (
 
 CREATE TABLE "Lock" (
   "id" bigserial PRIMARY KEY,
-  "barCode" varchar,
+  "barCode" varchar NOT NULL,
   "bikeId" bigint,
   "dockId" bigint NOT NULL,
   "status" "LOCK_STATUS" NOT NULL DEFAULT 'RELEASED'

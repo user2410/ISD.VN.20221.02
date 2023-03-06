@@ -46,4 +46,36 @@ public class Utils {
         ZonedDateTime zonedDateTime = time.atZone(ZoneOffset.UTC);
         return Timestamp.from(zonedDateTime.toInstant());
     }
+
+    /**
+     * EAN-13 barcode validator
+     *
+     * @param barcode
+     * @return boolean value indicating barcode validation
+     */
+    public static boolean validateBarcode(String barcode) {
+        if(barcode == null){
+            return false;
+        }
+
+        if (barcode.length() != 13 || !barcode.matches("^\\d{13}$")) {
+            return false;
+        }
+
+        // Calculate check digit
+        int sum = 0;
+        for (int i = 0; i < 12; i++) {
+            int digit = Character.getNumericValue(barcode.charAt(i));
+            if ((i & 1) == 0) {
+                sum += digit;
+            } else {
+                sum += digit * 3;
+            }
+        }
+        int checkDigit = (10 - (sum % 10)) % 10;
+
+        // Compare check digit to last digit in barcode
+        int lastDigit = Character.getNumericValue(barcode.charAt(12));
+        return checkDigit == lastDigit;
+    }
 }
