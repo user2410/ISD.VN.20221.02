@@ -20,3 +20,8 @@
 	+ Interface Design
 	+ Class Design
 - Checkpoint 3: Data modeling
+- Checkpoint 4: Programming
+	+ "Rent bike" usecase: Pham Le Danh Chinh
+	+ "Return bike" usecase: Hoang Xuan Bach
+- Update after demonstration: Convert barcodes to EAN-13 format
+
